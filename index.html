@@ -520,13 +520,9 @@
   </script>
 
   <!-- ==================== FIREBASE (Compat for plain HTML) ==================== -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore-compat.js"></script>
-
   <script>
-    window.firebaseConfig = {
-      apiKey: "AIzaSyCwgWnbZ-mvdBVpZLVDv1dyGJxjqHyo5vQ",
+    const firebaseConfig = {
+      apiKey: "AIzaSyCgWdn0z-mVdvbvp2VLDv1dyBjHlVs73E0",   <!-- ✅ new correct key -->
       authDomain: "a-to-z-live-tracking.firebaseapp.com",
       projectId: "a-to-z-live-tracking",
       storageBucket: "a-to-z-live-tracking.appspot.com",
@@ -534,10 +530,10 @@
       appId: "1:491906123448:web:3bffee3845c2dd47eb564d"
     };
 
-    // Init Firebase
-    firebase.initializeApp(window.firebaseConfig);
+    firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db   = firebase.firestore();
+  </script>
 
     // Helpers
     const serverTS = ()=> firebase.firestore.FieldValue.serverTimestamp();
@@ -750,4 +746,5 @@
     }
   } -->
 </body>
+
 </html>
