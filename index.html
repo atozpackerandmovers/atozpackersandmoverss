@@ -503,8 +503,29 @@ onclick="(async () => {
       document.getElementById('quoteAmt').textContent = '₹'+ Math.max(0,Math.round(cost)).toLocaleString('en-IN');
       document.getElementById('quoteBox').style.display='block';
     }
+</script>
 
-    // Hero timeline renderer
+<!-- Firebase SDKs (v8 compat) -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+<!-- ==================== FIREBASE (Config) ==================== -->
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyCgWdn0z-mVdvbvp2VLDv1dyBjHlVs73E0",
+    authDomain: "a-to-z-live-tracking.firebaseapp.com",
+    projectId: "a-to-z-live-tracking",
+    storageBucket: "a-to-z-live-tracking.appspot.com",
+    messagingSenderId: "491906123448",
+    appId: "1:491906123448:web:3bffee3845c2dd47eb564d"
+  };
+
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db   = firebase.firestore();
+</script>
     function updateStatusDisplay(order){
       const tl = document.getElementById('timeline');
       const eta = document.getElementById('eta');
@@ -752,5 +773,6 @@ onclick="(async () => {
 </body>
 
 </html>
+
 
 
