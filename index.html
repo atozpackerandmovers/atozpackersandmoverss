@@ -344,14 +344,18 @@
           <div id="adminLogin">
             <label>Email</label><input id="adminUsername" type="email" class="input" placeholder="you@example.com" />
             <label style="margin-top:8px">Password</label><input id="adminPassword" type="password" class="input" placeholder="••••••••" />
-            <button id="adminLoginButton" class="btn" style="width:100%;margin-top:10px">Sign In</button>
-          </div>
-
-          <div id="adminDashboard" style="display:none">
-            <div style="display:flex;gap:10px;margin-bottom:10px;flex-wrap:wrap">
-              <button class="btn secondary" onclick="uiLoadShipmentsFromFirestore()">Refresh</button>
-              <button class="btn secondary" onclick="firebase.auth().signOut().then(()=>{location.reload()})">Sign Out</button>
-            </div>
+            <button id="adminLoginButton" class="btn" style="width:100%;margin-top:10px"
+onclick="(async () => {
+  const email = (document.getElementById('adminUsername').value||'').trim();
+  const pass  = (document.getElementById('adminPassword').value||'').trim();
+  if(!email || !pass){ alert('Enter email & password'); return; }
+  try{
+    await firebase.auth().signInWithEmailAndPassword(email, pass);
+    location.reload(); // show dashboard after success
+  }catch(err){
+    alert('Login failed:\n' + (err?.code || '') + ' ' + (err?.message || ''));
+  }
+})()">Sign In</button>
 
             <!-- Create Shipment Form -->
             <div class="card" style="margin-bottom:12px">
@@ -748,4 +752,5 @@
 </body>
 
 </html>
+
 
