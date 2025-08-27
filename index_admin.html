@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>A to Z Packers & Movers — Single-File Website (Home • Track • Admin)</title>
+  <meta name="description" content="Professional packers & movers since 2005. One-file website with Home, Tracking, and Admin (Firebase Auth + Firestore)." />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root{
+      --ink:#0b0f14; --ink2:#111827; --muted:#6b7280; --line:#e5e7eb;
+      --bg:#f7f8fb; --card:#ffffff; --brand:#0d47a1; --brand2:#1e3a8a; --ok:#16a34a; --bad:#ef4444;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;background:linear-gradient(180deg,#f8fafc,#eef2ff 45%,#f7f8fb);color:var(--ink2)}
+    a{color:inherit;text-decoration:none}
+    .container{max-width:1100px;margin:0 auto;padding:0 16px}
+    .nav{position:sticky;top:0;z-index:50;background:#fff;border-bottom:1px solid var(--line)}
+    .nav .inner{height:64px;display:flex;align-items:center;justify-content:space-between}
+    .brand{display:flex;gap:10px;align-items:center}
+    .logo{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,var(--brand),#2563eb);display:grid;place-items:center;color:#fff;font-weight:900}
+    .title{font-weight:900;letter-spacing:.2px;color:var(--brand)}
+    .tabs{display:flex;gap:10px;flex-wrap:wrap}
+    .btn{display:inline-flex;gap:8px;align-items:center;justify-content:center;padding:10px 14px;border:1px solid var(--line);border-radius:12px;background:#fff;font-weight:700;cursor:pointer}
+    .btn.primary{background:var(--ink2);border-color:var(--ink2);color:#fff}
+    .btn.warn{background:var(--bad);border-color:var(--bad);color:#fff}
+    .btn.success{background:var(--ok);border-color:var(--ok);color:#fff}
+    .btn.ghost{background:transparent}
+    .section{padding:44px 0}
+    .card{background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.06);padding:18px}
+    h1{font-size:38px;line-height:1.12;margin:0 0 8px}
+    h2{font-size:26px;margin:0 0 12px}
+    .lead{color:var(--muted);font-size:17px}
+    .chips{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+    .chip{padding:6px 10px;border-radius:999px;background:#eef2ff;color:#1e3a8a;font-weight:700;font-size:12px}
+    .grid3{display:grid;gap:14px;grid-template-columns:repeat(3,1fr)}
+    .grid2{display:grid;gap:10px}
+    @media(max-width:900px){.grid3{grid-template-columns:1fr 1fr}}
+    @media(max-width:640px){.grid3{grid-template-columns:1fr}}
+    @media(min-width:640px){.grid2{grid-template-columns:1fr 1fr}}
+    label{display:block;font-weight:700;font-size:13px;margin:8px 0 6px}
+    input,select,textarea{width:100%;padding:12px 14px;border:1px solid #d1d5db;border-radius:12px;background:#fff;font:inherit}
+    input:focus,select:focus,textarea:focus{border-color:#93c5fd;box-shadow:0 0 0 4px rgba(59,130,246,.12);outline:none}
+    .msg{margin-top:10px;padding:10px 12px;border-radius:12px;display:none}
+    .msg.good{display:block;background:rgba(22,163,74,.08);border:1px solid rgba(22,163,74,.25);color:#065f46}
+    .msg.bad{display:block;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);color:#7f1d1d}
+    .pill{padding:6px 10px;border-radius:999px;background:#e5e7eb;font-weight:700;font-size:12px}
+    .timeline{border-left:3px solid #e2e8f0;margin-left:8px;padding-left:14px}
+    .timeitem{margin:10px 0}
+    .timeitem .dot{width:10px;height:10px;background:#1e3a8a;border-radius:50%;position:relative;left:-20px;top:16px}
+    footer{background:#0b1220;color:#cbd5e1;padding:28px 0;margin-top:30px}
+    footer a{color:#cbd5e1}
+    .hidden{display:none !important}
+  </style>
+</head>
+<body>
+  <!-- NAV -->
+  <div class="nav">
+    <div class="container inner">
+      <div class="brand">
+        <div class="logo">A-Z</div>
+        <div class="title">A to Z Packers & Movers</div>
+      </div>
+      <div class="tabs">
+        <button class="btn" data-tab="homeTab">Home</button>
+        <button class="btn" data-tab="trackTab">Track</button>
+        <button class="btn" data-tab="adminTab">Admin</button>
+        <a class="btn" href="https://wa.me/919338888550" target="_blank" rel="noopener">WhatsApp: 9338888550</a>
+        <button id="btnSignOutTop" class="btn warn hidden">Sign Out</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- HOME TAB -->
+    <section id="homeTab" class="section">
+      <div class="card">
+        <h1>Fast, Safe & Reliable Relocation — Odisha & All India</h1>
+        <p class="lead">Household, office, and vehicle moves. Live tracking, premium packing, and on-time delivery.</p>
+        <div class="chips">
+          <span class="chip">🛡️ Insured</span><span class="chip">📲 Live Tracking</span><span class="chip">🚚 14ft / 17ft / 18ft</span><span class="chip">🗺️ Pan-India</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>Our Core Services</h2>
+        <div class="grid3">
+          <div class="card"><b>📦 Packing & Loading</b><p class="lead">Fabric sheets, bubble, stretch film, cartons.</p></div>
+          <div class="card"><b>🚛 Transportation</b><p class="lead">Dedicated & sharing options, GPS-enabled fleet.</p></div>
+          <div class="card"><b>🏠 Unloading & Placement</b><p class="lead">Room-wise placement, basic unpacking.</p></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>Quick Enquiry</h2>
+        <div class="card">
+          <form id="qForm">
+            <div class="grid2">
+              <div><label for="qName">Your Name</label><input id="qName" required placeholder="Full name"></div>
+              <div><label for="qPhone">Phone</label><input id="qPhone" required placeholder="+91 9xxxxxxxxx"></div>
+            </div>
+            <div class="grid2">
+              <div><label for="qFrom">Pickup City</label><input id="qFrom" required placeholder="City / PIN"></div>
+              <div><label for="qTo">Delivery City</label><input id="qTo" required placeholder="City / PIN"></div>
+            </div>
+            <div><label for="qItems">Major Items</label><input id="qItems" placeholder="Beds, Sofa, Fridge, Washing Machine …"></div>
+            <div style="margin-top:10px"><button class="btn success" type="submit">Send on WhatsApp</button></div>
+            <div id="qMsg" class="msg"></div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- TRACK TAB -->
+    <section id="trackTab" class="section hidden">
+      <div class="card">
+        <h2>Track Your Shipment</h2>
+        <div class="grid2">
+          <div><label for="tid">Enter Tracking ID</label><input id="tid" placeholder="AZ250821-8226"></div>
+          <div><label>&nbsp;</label><button id="btnTrack" class="btn primary">Track Now</button></div>
+        </div>
+        <div id="noRes" class="msg bad" style="display:none">No order found for that ID.</div>
+        <div id="res" class="card" style="display:none;margin-top:12px">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+            <div>
+              <div style="font-weight:900" id="rName">—</div>
+              <div class="muted" id="rContact">—</div>
+            </div>
+            <div class="pill" id="rTid">—</div>
+          </div>
+          <div class="muted" id="rRoute" style="margin-top:6px">—</div>
+          <div class="timeline" id="rTimeline" style="margin-top:10px"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ADMIN TAB -->
+    <section id="adminTab" class="section hidden">
+      <!-- LOGIN CARD -->
+      <div id="loginView" class="card">
+        <h2>Admin Sign In</h2>
+        <div class="grid2">
+          <div><label for="email">Email</label><input id="email" type="email" placeholder="admin@example.com" autocomplete="username" /></div>
+          <div><label for="password">Password</label><input id="password" type="password" placeholder="••••••••" autocomplete="current-password" /></div>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap">
+          <button id="btnLogin" class="btn primary">Login</button>
+          <button id="btnSignup" class="btn">Create Admin</button>
+          <button id="btnReset" class="btn">Reset Password</button>
+        </div>
+        <div id="msg" class="msg"></div>
+      </div>
+
+      <!-- DASHBOARD -->
+      <div id="dashView" class="card hidden" style="margin-top:16px">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div><div class="pill" id="who">Signed in</div><div class="lead" style="margin-top:6px">Welcome to the control room.</div></div>
+          <button id="btnSignOut" class="btn warn">Sign Out</button>
+        </div>
+
+        <div class="section" style="padding-top:10px">
+          <h2>Create New Order</h2>
+          <div class="grid2">
+            <div><label for="custName">Customer Name</label><input id="custName" placeholder="Full name"></div>
+            <div><label for="custContact">Contact</label><input id="custContact" placeholder="+91 98xxxxxxx"></div>
+          </div>
+          <div class="grid2">
+            <div><label for="fromCity">From (pickup)</label><input id="fromCity" placeholder="Cuttack"></div>
+            <div><label for="toCity">To (destination)</label><input id="toCity" placeholder="Bangalore"></div>
+          </div>
+          <div class="grid2">
+            <div><label>Tracking ID (auto)</label><div class="card" id="autoTid" style="padding:10px 12px;font-family:ui-monospace,monospace"></div></div>
+            <div><label>&nbsp;</label><button id="btnCreate" class="btn success">Save New Entry (Booked)</button></div>
+          </div>
+          <div class="lead" style="font-size:14px">First status will be <span class="pill">Booked</span> with current time.</div>
+        </div>
+
+        <div class="section" style="padding-top:0">
+          <h2>Quick Status Update</h2>
+          <div class="grid2">
+            <div><label for="updTid">Tracking ID</label><input id="updTid" placeholder="Enter Tracking ID"></div>
+            <div><label for="updStatus">Status</label>
+              <select id="updStatus">
+                <option>Booked</option><option>Picked Up</option><option>Transit</option>
+                <option>Destination In</option><option>Destination Out</option>
+                <option>Out for Delivery</option><option>Delivered</option>
+              </select>
+            </div>
+          </div>
+          <div class="grid2" style="margin-top:10px">
+            <div><label for="updItems">Items</label><input id="updItems" placeholder="Fridge, Sofa, Boxes"></div>
+            <div><label for="updExpected">Expected Date of Delivery</label><input id="updExpected" type="date"></div>
+          </div>
+          <div style="margin-top:10px"><button id="btnAddStatus" class="btn primary">Add Status (now)</button></div>
+          <div id="hint" class="msg" style="display:none"></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <footer>
+    <div class="container" style="display:grid;gap:8px">
+      <div style="font-weight:900">A to Z Packers & Movers</div>
+      <div class="pill">Since 2005 • Live Tracking • Pan-India</div>
+      <div style="font-size:13px;color:#94a3b8">
+        211 Deula Sahi, Tulasipur, Cuttack · <a href="tel:+919338888550">+91 93388 88550</a> ·
+        <a href="https://atozpackersmovers.in" target="_blank" rel="noopener">atozpackersmovers.in</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Firebase v12 Modules -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, signOut } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc, updateDoc, arrayUnion, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+    // ✅ Your Firebase config (correct storageBucket domain)
+    const firebaseConfig = {
+      apiKey: "AIzaSyBGWEIsjTbf4ClUdXKE03mvaIqRZCR2KN8",
+      authDomain: "a-to-z-packers-and-movers-web.firebaseapp.com",
+      projectId: "a-to-z-packers-and-movers-web",
+      storageBucket: "a-to-z-packers-and-movers-web.appspot.com",
+      messagingSenderId: "960277307678",
+      appId: "1:960277307678:web:059987e7a5546e5471a90f"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db   = getFirestore(app);
+    const $ = (id)=>document.getElementById(id);
+
+    // ===== Tabs (SPA) =====
+    const tabs = ["homeTab","trackTab","adminTab"];
+    document.querySelectorAll("[data-tab]").forEach(btn=>{
+      btn.addEventListener("click", ()=> showTab(btn.dataset.tab));
+    });
+    function showTab(id){
+      tabs.forEach(t=>$(t).classList.add("hidden"));
+      $(id).classList.remove("hidden");
+      // admin needs auth check UI refresh
+      if(id==="adminTab"){
+        if(auth.currentUser){ $("loginView").classList.add("hidden"); $("dashView").classList.remove("hidden"); }
+        else { $("dashView").classList.add("hidden"); $("loginView").classList.remove("hidden"); }
+      }
+      window.scrollTo({top:0,behavior:"smooth"});
+    }
+    showTab("homeTab"); // default
+
+    // ===== WhatsApp Enquiry =====
+    $("qForm").addEventListener("submit",(e)=>{
+      e.preventDefault();
+      const name = $("qName").value.trim();
+      const phone= $("qPhone").value.trim();
+      const from = $("qFrom").value.trim();
+      const to   = $("qTo").value.trim();
+      const items= $("qItems").value.trim();
+      const msg  = encodeURIComponent(`New Enquiry:%0AName: ${name}%0APhone: ${phone}%0APickup: ${from}%0ADelivery: ${to}%0AItems: ${items}`);
+      window.open(`https://wa.me/919338888550?text=${msg}`,'_blank');
+      const m = $("qMsg"); m.className="msg good"; m.textContent="Opening WhatsApp…"; m.style.display="block";
+    });
+
+    // ===== Tracking (public) =====
+    $("btnTrack").addEventListener("click", async ()=>{
+      const tid = $("tid").value.trim();
+      if(!tid) return;
+      const snap = await getDoc(doc(db,"Orders",tid));
+      if(!snap.exists()){
+        $("res").style.display="none"; const n=$("noRes"); n.style.display="block"; n.textContent="No order found for that ID."; return;
+      }
+      $("noRes").style.display="none";
+      const d = snap.data();
+      $("res").style.display="block";
+      $("rName").textContent = d.Name || "-";
+      $("rContact").textContent = d.Contact || "-";
+      $("rTid").textContent = tid;
+      $("rRoute").textContent = `${d.From||"-"} → ${d.To||"-"}`;
+      const tl = $("rTimeline"); tl.innerHTML="";
+      (d.Status||[]).sort((a,b)=>(a.Ts?.seconds||0)-(b.Ts?.seconds||0)).forEach(i=>{
+        const div = document.createElement("div"); div.className="timeitem";
+        const ts = i.Ts ? new Date(i.Ts.seconds*1000).toLocaleString() : "";
+        div.innerHTML = `<div class="dot"></div>
+                         <div style="font-weight:800">${i.Text||"-"}</div>
+                         <div class="muted">${ts}</div>
+                         ${i.Items?`<div>🗂 Items: ${i.Items}</div>`:''}
+                         ${i.Expected?`<div>📅 Expected Delivery: ${i.Expected}</div>`:''}`;
+        tl.appendChild(div);
+      });
+    });
+
+    // ===== Admin Auth =====
+    const msgBox = $("msg");
+    const showMsg=(ok,t)=>{ msgBox.className="msg "+(ok?"good":"bad"); msgBox.textContent=t; msgBox.style.display="block"; };
+    const hideMsg=()=>{ msgBox.style.display="none"; };
+
+    onAuthStateChanged(auth,(user)=>{
+      if(user){
+        $("loginView").classList.add("hidden");
+        $("dashView").classList.remove("hidden");
+        $("who").textContent = `Signed in as ${user.email}`;
+        $("btnSignOutTop").classList.remove("hidden");
+      }else{
+        $("dashView").classList.add("hidden");
+        $("loginView").classList.remove("hidden");
+        $("btnSignOutTop").classList.add("hidden");
+        hideMsg();
+      }
+    });
+
+    $("btnLogin").addEventListener("click", async ()=>{
+      try{ await signInWithEmailAndPassword(auth, $("email").value.trim(), $("password").value);
+           showMsg(true,"Login successful."); }
+      catch(e){ showMsg(false, (e.code||e.message).replace("auth/","")); }
+    });
+    $("btnSignup").addEventListener("click", async ()=>{
+      try{ await createUserWithEmailAndPassword(auth, $("email").value.trim(), $("password").value);
+           showMsg(true,"Admin user created."); }
+      catch(e){ showMsg(false, (e.code||e.message).replace("auth/","")); }
+    });
+    $("btnReset").addEventListener("click", async ()=>{
+      const email=$("email").value.trim(); if(!email) return showMsg(false,"Enter email first.");
+      try{ await sendPasswordResetEmail(auth,email); showMsg(true,"Password reset email sent."); }
+      catch(e){ showMsg(false,(e.code||e.message).replace("auth/","")); }
+    });
+    const doSignOut=async()=>{ try{ await signOut(auth); }catch(_){} };
+    $("btnSignOut").addEventListener("click", doSignOut);
+    $("btnSignOutTop").addEventListener("click", doSignOut);
+
+    // ===== Admin: Create Order / Status =====
+    function makeTrackingId(){
+      const now = new Date();
+      const p = new Intl.DateTimeFormat("en-IN",{day:"2-digit",month:"2-digit",year:"2-digit"}).format(now).replace(/\//g,"");
+      const rnd = Math.floor(1000+Math.random()*9000);
+      return `AZ${p}-${rnd}`;
+    }
+    const nextTid = makeTrackingId();
+    $("autoTid").textContent = nextTid;
+    $("updTid").value = nextTid;
+
+    $("btnCreate").addEventListener("click", async ()=>{
+      const user = auth.currentUser; if(!user) return showMsg(false,"Sign in first.");
+      const name = $("custName").value.trim();
+      const contact = $("custContact").value.trim();
+      const from = $("fromCity").value.trim();
+      const to   = $("toCity").value.trim();
+      const tid  = $("autoTid").textContent.trim();
+      if(!name||!contact||!from||!to) return showMsg(false,"Fill all fields.");
+      try{
+        await setDoc(doc(db,"Orders",tid), {
+          Name:name, Contact:contact, From:from, To:to,
+          CreatedAt: serverTimestamp(),
+          Status:[{ Text:"Booked", Ts: serverTimestamp() }]
+        });
+        $("updTid").value = tid;
+        const h=$("hint"); h.className="msg good"; h.textContent=`Order saved with Tracking ID: ${tid}`; h.style.display="block";
+      }catch(e){ showMsg(false,e.message||e.code); }
+    });
+
+    $("btnAddStatus").addEventListener("click", async ()=>{
+      const user = auth.currentUser; if(!user) return showMsg(false,"Sign in first.");
+      const tid = $("updTid").value.trim();
+      const text = $("updStatus").value;
+      const items = $("updItems").value.trim();
+      const expected = $("updExpected").value;
+      if(!tid) return showMsg(false,"Enter Tracking ID.");
+      try{
+        const ref = doc(db,"Orders",tid);
+        const snap = await getDoc(ref);
+        if(!snap.exists()) return showMsg(false,"No such order.");
+        await updateDoc(ref,{ Status: arrayUnion({ Text:text, Items:items, Expected:expected, Ts: serverTimestamp() }) });
+        const h=$("hint"); h.className="msg good"; h.textContent=`Added "${text}" at ${new Date().toLocaleString()}`; h.style.display="block";
+      }catch(e){ showMsg(false,e.message||e.code); }
+    });
+  </script>
+</body>
+</html>
