@@ -1,0 +1,1909 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>A to Z Packers & Movers - Staff Attendance v2.1</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { 
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; 
+            background-color: #ffffff !important;
+            color: #1f2937 !important;
+            overflow-x: hidden;
+            width: 100%;
+            max-width: 100vw;
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 100vw;
+            padding-left: 1rem;
+            padding-right: 1rem;
+            margin: 0 auto;
+        }
+        .status-pill { @apply px-3 py-1 rounded-full text-xs font-medium; }
+        .status-none { @apply bg-gray-200 text-gray-700; }
+        .status-in { @apply bg-green-100 text-green-800; }
+        .status-complete { @apply bg-blue-100 text-blue-800; }
+        .status-break { @apply bg-yellow-100 text-yellow-800; }
+        .status-overtime { @apply bg-purple-100 text-purple-800; }
+        .btn-primary { @apply bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition-colors shadow-md border-3 border-blue-700; }
+        .btn-secondary { @apply bg-gray-600 hover:bg-gray-700 text-white font-medium py-3 px-6 rounded-lg transition-colors shadow-md border-3 border-gray-700; }
+        .btn-success { @apply bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-6 rounded-lg transition-colors shadow-md border-3 border-green-700; }
+        .btn-warning { @apply bg-orange-600 hover:bg-orange-700 text-white font-medium py-3 px-6 rounded-lg transition-colors shadow-md border-3 border-orange-700; }
+        .btn-danger { @apply bg-red-600 hover:bg-red-700 text-white font-medium py-3 px-6 rounded-lg transition-colors shadow-md border-3 border-red-700; }
+        .input-field { 
+            background-color: white !important; 
+            border: 3px solid #e5e7eb !important; 
+            color: #1f2937 !important; 
+            border-radius: 0.5rem !important; 
+            padding: 0.75rem 1rem !important; 
+            outline: none !important;
+            width: 100%;
+            min-width: 0;
+        }
+        
+        /* Mobile-first responsive grid */
+        .mobile-grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+            width: 100%;
+        }
+        
+        .mobile-grid-3 {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.75rem;
+            width: 100%;
+        }
+        
+        @media (min-width: 640px) {
+            .mobile-grid-3 {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        
+        .mobile-full {
+            width: 100%;
+            min-width: 0;
+        }
+        .input-field:focus { 
+            border-color: #3b82f6 !important; 
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important; 
+        }
+        .input-field::placeholder { 
+            color: #6b7280 !important; 
+        }
+        #map { height: 200px; border-radius: 0.5rem; }
+        .notification-badge { @apply absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center; }
+        .gradient-bg { background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%); }
+        .card-hover { 
+            transition: all 0.2s; 
+            background-color: white;
+            border: 3px solid #e5e7eb;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        .card-hover:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        .pulse-animation { animation: pulse 2s infinite; }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .location-status {
+            padding: 12px;
+            border-radius: 8px;
+            margin: 8px 0;
+            font-size: 14px;
+            border: 3px solid;
+        }
+        .location-success { 
+            background-color: #d1fae5; 
+            color: #065f46; 
+            border-color: #10b981;
+        }
+        .location-error { 
+            background-color: #fecaca; 
+            color: #7f1d1d; 
+            border-color: #ef4444;
+        }
+        .location-warning { 
+            background-color: #fed7aa; 
+            color: #92400e; 
+            border-color: #f59e0b;
+        }
+        .location-info { 
+            background-color: #dbeafe; 
+            color: #1e3a8a; 
+            border-color: #3b82f6;
+        }
+        .header-bg {
+            background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
+        }
+        .menu-bg {
+            background-color: #f9fafb;
+            border-right: 3px solid #e5e7eb;
+            color: #1f2937;
+        }
+        .text-primary { color: #1f2937 !important; }
+        .text-secondary { color: #6b7280 !important; }
+        .bg-card { 
+            background-color: white !important; 
+            border: 3px solid #e5e7eb !important;
+        }
+        
+        /* Professional Attendance Box Styles */
+        .attendance-box {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border: 3px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            min-height: 140px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .attendance-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #10b981, #3b82f6);
+        }
+        
+        .attendance-box-inner {
+            width: 100%;
+        }
+        
+        .attendance-icon {
+            width: 56px;
+            height: 56px;
+            margin: 0 auto 12px;
+            background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+        
+        .attendance-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 4px;
+            letter-spacing: 0.5px;
+        }
+        
+        .attendance-subtitle {
+            font-size: 12px;
+            color: #6b7280;
+            margin-bottom: 8px;
+        }
+        
+        .attendance-status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .check-in-box .attendance-status {
+            background: #dcfce7;
+            color: #166534;
+        }
+        
+        .check-out-box .attendance-status {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .check-in-box:hover {
+            border-color: #10b981;
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.15);
+        }
+        
+        .check-out-box:hover {
+            border-color: #f59e0b;
+            box-shadow: 0 8px 25px rgba(245, 158, 11, 0.15);
+        }
+        
+        .attendance-box.disabled {
+            opacity: 0.5;
+            cursor: not-allowed !important;
+            transform: none !important;
+        }
+        
+        .attendance-box.disabled:hover {
+            transform: none !important;
+            box-shadow: none !important;
+            border-color: #e2e8f0 !important;
+        }
+        
+        .attendance-box.completed .attendance-status {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        
+        /* Break Button Styles */
+        .break-btn {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-weight: 600;
+            color: #374151;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        
+        .break-btn:hover {
+            border-color: #9ca3af;
+            background: #f9fafb;
+            transform: translateY(-1px);
+        }
+        
+        .break-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+        
+        .break-icon {
+            font-size: 18px;
+        }
+        
+        .break-text {
+            font-size: 14px;
+        }
+        
+        /* Action Button Styles */
+        .action-btn {
+            width: 100%;
+            padding: 16px 20px;
+            border-radius: 12px;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+        
+        .primary-action {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+        
+        .primary-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+        }
+        
+        .emergency-action {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+        
+        .emergency-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+        }
+        
+        .action-icon {
+            font-size: 18px;
+        }
+        
+        .action-text {
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body class="bg-white text-primary min-h-screen">
+    <!-- Loading Screen -->
+    <div id="loading" class="fixed inset-0 bg-white flex items-center justify-center z-50">
+        <div class="text-center">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500 mx-auto mb-4"></div>
+            <p class="text-secondary">Loading A to Z Attendance v2.1...</p>
+        </div>
+    </div>
+
+    <!-- Simple Login Screen -->
+    <div id="loginScreen" class="hidden min-h-screen flex items-center justify-center p-4">
+        <div class="bg-card rounded-xl p-6 w-full max-w-md shadow-2xl">
+            <div class="text-center mb-6">
+                <div class="gradient-bg w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center">
+                    <span class="text-2xl">📦</span>
+                </div>
+                <h1 class="text-2xl font-bold text-green-600 mb-2">A to Z Packers & Movers</h1>
+                <p class="text-secondary">Staff Attendance System v2.1</p>
+            </div>
+
+            <div class="space-y-4">
+                <input type="text" id="employeeName" placeholder="Your Full Name" class="input-field w-full">
+                <input type="tel" id="employeePhone" placeholder="Phone Number" class="input-field w-full">
+                <select id="employeeDepartment" class="input-field w-full">
+                    <option value="">Select Department</option>
+                    <option value="packing">Packing Team</option>
+                    <option value="loading">Loading Team</option>
+                    <option value="transport">Transport</option>
+                    <option value="office">Office Staff</option>
+                    <option value="management">Management</option>
+                </select>
+                <input type="password" id="adminPin" placeholder="Admin PIN (Optional - for admin access)" class="input-field w-full">
+                <button id="loginBtn" class="btn-primary w-full">Start Attendance</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="mainApp" class="hidden mobile-full">
+        <!-- Header -->
+        <header class="header-bg p-4 sticky top-0 z-40 shadow-lg mobile-full">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-lg font-bold text-white">A to Z Packers & Movers</h1>
+                    <p class="text-sm text-green-100" id="userInfo">Welcome back!</p>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <div class="relative">
+                        <button id="notificationBtn" class="p-2 hover:bg-white hover:bg-opacity-20 rounded relative text-white">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM11 19H6.5A2.5 2.5 0 014 16.5v-9A2.5 2.5 0 016.5 5h11A2.5 2.5 0 0120 7.5v3.5"></path>
+                            </svg>
+                            <span id="notificationBadge" class="notification-badge hidden">0</span>
+                        </button>
+                    </div>
+                    <span id="statusPill" class="status-pill status-none">—</span>
+                    <button id="menuBtn" class="p-2 hover:bg-white hover:bg-opacity-20 rounded text-white">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Menu Overlay -->
+        <div id="menuOverlay" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50">
+            <div class="menu-bg w-64 h-full p-4">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-lg font-semibold text-primary">Menu</h2>
+                    <button id="closeMenu" class="p-2 hover:bg-gray-200 rounded text-primary">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div class="space-y-2">
+                    <button id="showAttendanceView" class="w-full text-left p-3 hover:bg-green-50 rounded flex items-center text-primary">
+                        <span class="mr-3">🏠</span> Home
+                    </button>
+                    <button id="showHistoryView" class="w-full text-left p-3 hover:bg-blue-50 rounded flex items-center text-primary">
+                        <span class="mr-3">📊</span> History
+                    </button>
+                    <button id="showProfileView" class="w-full text-left p-3 hover:bg-blue-50 rounded flex items-center text-primary">
+                        <span class="mr-3">👤</span> Profile
+                    </button>
+                    <button id="showAdminView" class="w-full text-left p-3 hover:bg-blue-50 rounded hidden flex items-center text-primary">
+                        <span class="mr-3">👥</span> Admin Panel
+                    </button>
+                    <hr class="border-gray-300 my-2">
+                    <button id="logoutBtn" class="w-full text-left p-3 hover:bg-red-50 rounded text-red-600 flex items-center">
+                        <span class="mr-3">🚪</span> Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Attendance View -->
+        <div id="attendanceView" class="container space-y-6 pb-6">
+            <!-- Current Status Card -->
+            <div class="bg-card rounded-xl p-4 card-hover">
+                <div class="flex items-center justify-between mb-3">
+                    <h2 class="text-lg font-semibold text-primary">Today's Status</h2>
+                    <div id="workingHours" class="text-sm text-secondary">0h 0m</div>
+                </div>
+                <div class="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                        <p class="text-secondary">Check-In</p>
+                        <p id="checkInTime" class="font-medium text-primary">—</p>
+                    </div>
+                    <div>
+                        <p class="text-secondary">Check-Out</p>
+                        <p id="checkOutTime" class="font-medium text-primary">—</p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4 text-sm mt-3">
+                    <div>
+                        <p class="text-secondary">Break Time</p>
+                        <p id="breakTime" class="font-medium text-primary">—</p>
+                    </div>
+                    <div>
+                        <p class="text-secondary">Overtime</p>
+                        <p id="overtimeHours" class="font-medium text-primary">—</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="mobile-grid-3">
+                <div class="bg-card rounded-xl p-4 text-center card-hover">
+                    <div class="text-2xl font-bold text-green-600" id="monthlyDays">0</div>
+                    <div class="text-xs text-secondary">Days This Month</div>
+                </div>
+                <div class="bg-card rounded-xl p-4 text-center card-hover">
+                    <div class="text-2xl font-bold text-blue-600" id="weeklyHours">0h</div>
+                    <div class="text-xs text-secondary">Hours This Week</div>
+                </div>
+                <div class="bg-card rounded-xl p-4 text-center card-hover">
+                    <div class="text-2xl font-bold text-purple-600" id="avgHours">0h</div>
+                    <div class="text-xs text-secondary">Daily Average</div>
+                </div>
+            </div>
+
+            <!-- Enhanced Location Section -->
+            <div class="bg-card rounded-xl p-4 card-hover">
+                <h2 class="text-lg font-semibold mb-3 text-primary">📍 Location Services</h2>
+                
+                <!-- Location Status Display -->
+                <div id="locationStatus" class="location-info">
+                    <strong>🔍 Location Status:</strong> Checking availability...
+                </div>
+                
+                <!-- Location Controls -->
+                <div class="mb-4">
+                    <button id="getLocationBtn" class="btn-primary w-full">📍 Get Current Location</button>
+                </div>
+                
+                <!-- Location Information Display -->
+                <div id="locationInfo" class="hidden space-y-3">
+                    <div id="map" class="bg-green-50 border-3 border-green-200 rounded-lg flex items-center justify-center text-green-700 p-4">
+                        <p>📍 Location: <span id="locationDisplay">—</span></p>
+                    </div>
+                    <div class="text-sm space-y-1">
+                        <p><span class="text-secondary">Coordinates:</span> <span id="coordinates" class="text-primary">—</span></p>
+                        <p><span class="text-secondary">Address:</span> <span id="address" class="text-primary font-medium">—</span></p>
+                        <p><span class="text-secondary">Accuracy:</span> <span id="accuracy" class="text-primary">—</span></p>
+                        <p><span class="text-secondary">Method:</span> <span id="locationMethod" class="text-primary">—</span></p>
+                    </div>
+                </div>
+                
+                <!-- Enhanced Error Display -->
+                <div id="locationError" class="hidden location-error">
+                    <div class="flex items-start space-x-2">
+                        <span class="text-xl">⚠️</span>
+                        <div class="flex-1">
+                            <p class="font-medium">Location Access Issue:</p>
+                            <p id="locationErrorMessage" class="mb-2">—</p>
+                            <div class="text-sm">
+                                <p><strong>💡 Solutions:</strong></p>
+                                <div id="locationSolutions" class="ml-4 space-y-1">
+                                    <!-- Solutions will be populated dynamically -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+
+            <!-- Attendance Actions -->
+            <div class="bg-card rounded-xl p-4 card-hover">
+                <h2 class="text-lg font-semibold mb-6 text-primary">Attendance Actions</h2>
+                
+                <!-- Main Check-in/Check-out Boxes -->
+                <div class="mobile-grid-2 mb-6">
+                    <!-- Check In Box -->
+                    <div id="checkInBtn" class="attendance-box check-in-box cursor-pointer transform transition-all duration-200 hover:scale-105 hover:shadow-xl">
+                        <div class="attendance-box-inner">
+                            <div class="attendance-icon">
+                                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
+                                </svg>
+                            </div>
+                            <h3 class="attendance-title">CHECK IN</h3>
+                            <p class="attendance-subtitle">Start your workday</p>
+                            <div class="attendance-status">Ready</div>
+                        </div>
+                    </div>
+
+                    <!-- Check Out Box -->
+                    <div id="checkOutBtn" class="attendance-box check-out-box cursor-pointer transform transition-all duration-200 hover:scale-105 hover:shadow-xl">
+                        <div class="attendance-box-inner">
+                            <div class="attendance-icon">
+                                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                                </svg>
+                            </div>
+                            <h3 class="attendance-title">CHECK OUT</h3>
+                            <p class="attendance-subtitle">End your workday</p>
+                            <div class="attendance-status">Pending</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Break Action Boxes -->
+                <div class="mobile-grid-2 mb-4">
+                    <button id="breakStartBtn" class="break-btn break-start">
+                        <span class="break-icon">☕</span>
+                        <span class="break-text">Start Break</span>
+                    </button>
+                    <button id="breakEndBtn" class="break-btn break-end">
+                        <span class="break-icon">⏰</span>
+                        <span class="break-text">End Break</span>
+                    </button>
+                </div>
+
+                <!-- Communication Actions -->
+                <div class="space-y-3">
+                    <button id="sendToBossBtn" class="action-btn primary-action">
+                        <span class="action-icon">📱</span>
+                        <span class="action-text">Send Report to Boss</span>
+                    </button>
+                    <button id="emergencyBtn" class="action-btn emergency-action">
+                        <span class="action-icon">🚨</span>
+                        <span class="action-text">Emergency Alert</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Notes Section -->
+            <div class="bg-card rounded-xl p-4 card-hover">
+                <h2 class="text-lg font-semibold mb-3 text-primary">Daily Notes</h2>
+                <textarea id="dailyNotes" placeholder="Add notes about your work today..." 
+                    class="input-field w-full h-20 resize-none"></textarea>
+                <button id="saveNotesBtn" class="btn-primary mt-2">💾 Save Notes</button>
+            </div>
+        </div>
+
+        <!-- History View -->
+        <div id="historyView" class="hidden container space-y-6 pb-6">
+            <div class="bg-card rounded-xl p-4">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-lg font-semibold text-primary">Attendance History</h2>
+                    <button id="homeFromHistory" class="btn-secondary text-sm py-2 px-4">
+                        <span class="mr-2">🏠</span> Home
+                    </button>
+                </div>
+                <div class="flex space-x-2 mb-4">
+                    <select id="historyFilter" class="input-field flex-1">
+                        <option value="week">This Week</option>
+                        <option value="month">This Month</option>
+                        <option value="all">All Time</option>
+                    </select>
+                    <button id="exportBtn" class="btn-secondary">📊 Export</button>
+                </div>
+                <div id="historyList" class="space-y-2">
+                    <!-- History will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile View -->
+        <div id="profileView" class="hidden container space-y-6 pb-6">
+            <div class="bg-card rounded-xl p-4">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-lg font-semibold text-primary">Profile Settings</h2>
+                    <button id="homeFromProfile" class="btn-secondary text-sm py-2 px-4">
+                        <span class="mr-2">🏠</span> Home
+                    </button>
+                </div>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm text-secondary mb-1">Name</label>
+                        <input type="text" id="profileName" class="input-field w-full">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-secondary mb-1">Phone</label>
+                        <input type="tel" id="profilePhone" class="input-field w-full">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-secondary mb-1">Department</label>
+                        <select id="profileDepartment" class="input-field w-full">
+                            <option value="packing">Packing Team</option>
+                            <option value="loading">Loading Team</option>
+                            <option value="transport">Transport</option>
+                            <option value="office">Office Staff</option>
+                            <option value="management">Management</option>
+                        </select>
+                    </div>
+                    <button id="updateProfileBtn" class="btn-primary">💾 Update Profile</button>
+                </div>
+            </div>
+
+            <div class="bg-gray-800 rounded-xl p-4">
+                <h3 class="font-semibold mb-3">Preferences</h3>
+                <div class="space-y-3">
+                    <label class="flex items-center justify-between">
+                        <span>Auto-location on check-in</span>
+                        <input type="checkbox" id="autoLocation" class="toggle" checked>
+                    </label>
+                    <label class="flex items-center justify-between">
+                        <span>Push notifications</span>
+                        <input type="checkbox" id="pushNotifications" class="toggle" checked>
+                    </label>
+                    <label class="flex items-center justify-between">
+                        <span>Dark mode</span>
+                        <input type="checkbox" id="darkMode" class="toggle" checked>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin View -->
+        <div id="adminView" class="hidden container space-y-6 pb-6">
+            <!-- Admin Header -->
+            <div class="bg-gray-800 rounded-xl p-4">
+                <div class="flex items-center justify-between mb-3">
+                    <h2 class="text-lg font-semibold">Admin Dashboard</h2>
+                    <button id="homeFromAdmin" class="btn-secondary text-sm py-2 px-4">
+                        <span class="mr-2">🏠</span> Home
+                    </button>
+                </div>
+                <div class="text-sm space-y-1">
+                    <p><span class="text-gray-400">Company:</span> A to Z Packers & Movers</p>
+                    <p><span class="text-gray-400">Boss WhatsApp:</span> +91 93388 88550</p>
+                    <p><span class="text-gray-400">Total Employees:</span> <span id="totalEmployees">—</span></p>
+                </div>
+            </div>
+
+            <!-- Real-time Dashboard -->
+            <div class="mobile-grid-2">
+                <div class="bg-gray-800 rounded-xl p-4 text-center">
+                    <div class="text-3xl font-bold text-green-400" id="currentlyIn">0</div>
+                    <div class="text-sm text-gray-400">Currently In</div>
+                </div>
+                <div class="bg-gray-800 rounded-xl p-4 text-center">
+                    <div class="text-3xl font-bold text-yellow-400" id="onBreak">0</div>
+                    <div class="text-sm text-gray-400">On Break</div>
+                </div>
+            </div>
+
+            <!-- Today's Summary -->
+            <div class="bg-gray-800 rounded-xl p-4">
+                <h3 class="font-semibold mb-3">Today's Summary</h3>
+                <div id="todaySummary" class="grid grid-cols-4 gap-4 text-center">
+                    <div><p class="text-2xl font-bold text-blue-400">0</p><p class="text-xs text-gray-400">Total</p></div>
+                    <div><p class="text-2xl font-bold text-green-400">0</p><p class="text-xs text-gray-400">Active</p></div>
+                    <div><p class="text-2xl font-bold text-purple-400">0</p><p class="text-xs text-gray-400">Completed</p></div>
+                    <div><p class="text-2xl font-bold text-orange-400">0h</p><p class="text-xs text-gray-400">Total Hours</p></div>
+                </div>
+            </div>
+
+            <!-- Staff Directory -->
+            <div class="bg-gray-800 rounded-xl p-4">
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="font-semibold">Staff Directory</h3>
+                    <button id="refreshStaffBtn" class="btn-secondary text-sm py-1 px-3">🔄 Refresh</button>
+                </div>
+                <div id="staffDirectory" class="space-y-2">
+                    <p class="text-gray-400">No staff data available in demo mode</p>
+                </div>
+            </div>
+
+            <!-- Admin Actions -->
+            <div class="bg-gray-800 rounded-xl p-4">
+                <h3 class="font-semibold mb-3">Admin Actions</h3>
+                <div class="mobile-grid-2">
+                    <button id="exportAllBtn" class="btn-primary">📊 Export All Data</button>
+                    <button id="sendBulkBtn" class="btn-secondary">📱 Bulk Message</button>
+                    <button id="resetDayBtn" class="btn-warning">🔄 Reset Day</button>
+                    <button id="backupBtn" class="btn-success">💾 Backup Data</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toast" class="hidden fixed bottom-4 left-4 right-4 bg-gray-800 text-white p-4 rounded-lg shadow-lg z-50">
+        <p id="toastMessage"></p>
+    </div>
+
+    <!-- Notification Panel -->
+    <div id="notificationPanel" class="hidden fixed top-16 right-4 bg-gray-800 rounded-lg shadow-lg p-4 w-80 z-50">
+        <h3 class="font-semibold mb-3">Notifications</h3>
+        <div id="notificationList" class="space-y-2 max-h-60 overflow-y-auto">
+            <p class="text-gray-400 text-sm">No new notifications</p>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const CONFIG = {
+            ADMIN_PIN: "9999",
+            BOSS_WHATSAPP_E164: "+919338888550",
+            WORK_HOURS: {
+                START: "09:00",
+                END: "18:00",
+                BREAK_DURATION: 60 // minutes
+            }
+        };
+
+        // Global State
+        let currentUser = null;
+        let currentLocation = null;
+        let todayAttendance = null;
+        let workTimer = null;
+        let notifications = [];
+        let attendanceHistory = [];
+        let locationSupport = {
+            available: false,
+            permissions: 'unknown',
+            https: false,
+            iframe: false
+        };
+
+        // Utility Functions
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            toastMessage.textContent = message;
+            toast.className = `fixed bottom-4 left-4 right-4 p-4 rounded-lg shadow-lg z-50 ${
+                type === 'error' ? 'bg-red-600' : 
+                type === 'success' ? 'bg-green-600' : 
+                type === 'warning' ? 'bg-orange-600' : 'bg-gray-800'
+            } text-white`;
+            toast.classList.remove('hidden');
+            setTimeout(() => toast.classList.add('hidden'), 4000);
+        }
+
+        function updateLocationStatus(message, type = 'info') {
+            const statusEl = document.getElementById('locationStatus');
+            statusEl.className = `location-status location-${type}`;
+            statusEl.innerHTML = `<strong>📍 Location Status:</strong> ${message}`;
+        }
+
+        function showLocationSolutions(errorType) {
+            const solutionsEl = document.getElementById('locationSolutions');
+            let solutions = [];
+
+            switch(errorType) {
+                case 'permission_denied':
+                    solutions = [
+                        '1. Click the location icon (🔒) in your browser address bar',
+                        '2. Select "Allow" for location access',
+                        '3. Refresh the page and try again',
+                        '4. Check if location services are enabled on your device'
+                    ];
+                    break;
+                case 'position_unavailable':
+                    solutions = [
+                        '1. Move to an area with better GPS signal',
+                        '2. Enable location services on your device',
+                        '3. Try again in a few moments',
+                        '4. Use manual entry as backup'
+                    ];
+                    break;
+                case 'timeout':
+                    solutions = [
+                        '1. Check your internet connection',
+                        '2. Move to an area with better signal',
+                        '3. Try again with a longer timeout',
+                        '4. Use manual entry if GPS is slow'
+                    ];
+                    break;
+                case 'not_supported':
+                    solutions = [
+                        '1. Use a modern browser (Chrome, Firefox, Safari)',
+                        '2. Ensure you\'re using HTTPS connection',
+                        '3. Use manual entry for location',
+                        '4. Contact IT support if needed'
+                    ];
+                    break;
+                case 'iframe_blocked':
+                    solutions = [
+                        '1. Open this page directly (not in iframe)',
+                        '2. Ask admin to enable geolocation in iframe',
+                        '3. Use manual entry for now',
+                        '4. Contact technical support'
+                    ];
+                    break;
+                default:
+                    solutions = [
+                        '1. Try refreshing the page',
+                        '2. Use manual entry as backup',
+                        '3. Check browser settings',
+                        '4. Contact support if issue persists'
+                    ];
+            }
+
+            solutionsEl.innerHTML = solutions.map(s => `<p>• ${s}</p>`).join('');
+        }
+
+        function formatIST(date) {
+            const formatted = new Intl.DateTimeFormat('en-IN', {
+                timeZone: 'Asia/Kolkata',
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false
+            }).format(date);
+            
+            // Ensure all time components are 2 digits
+            return formatted.replace(/(\d{1,2}):(\d{1,2}):(\d{1,2})/, (match, h, m, s) => {
+                return `${h.padStart(2, '0')}:${m.padStart(2, '0')}:${s.padStart(2, '0')}`;
+            });
+        }
+
+        function formatDuration(minutes) {
+            const hours = Math.floor(minutes / 60);
+            const mins = minutes % 60;
+            return `${hours.toString().padStart(2, '0')}h ${mins.toString().padStart(2, '0')}m`;
+        }
+
+        function calculateWorkingHours() {
+            if (!todayAttendance || !todayAttendance.checkInAt) return "0h 0m";
+            
+            const checkIn = new Date(todayAttendance.checkInAt);
+            const checkOut = todayAttendance.checkOutAt ? new Date(todayAttendance.checkOutAt) : new Date();
+            const breakTime = todayAttendance.totalBreakTime || 0;
+            
+            const totalMinutes = Math.floor((checkOut - checkIn) / (1000 * 60)) - breakTime;
+            return formatDuration(Math.max(0, totalMinutes));
+        }
+
+        function addNotification(message, type = 'info') {
+            const notification = {
+                id: Date.now(),
+                message,
+                type,
+                timestamp: new Date(),
+                read: false
+            };
+            notifications.unshift(notification);
+            updateNotificationUI();
+        }
+
+        function updateNotificationUI() {
+            const badge = document.getElementById('notificationBadge');
+            const unreadCount = notifications.filter(n => !n.read).length;
+            
+            if (unreadCount > 0) {
+                badge.textContent = unreadCount;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+
+            const list = document.getElementById('notificationList');
+            if (notifications.length === 0) {
+                list.innerHTML = '<p class="text-gray-400 text-sm">No new notifications</p>';
+            } else {
+                list.innerHTML = notifications.slice(0, 10).map(n => `
+                    <div class="p-2 rounded ${n.read ? 'bg-gray-700' : 'bg-blue-900'} text-sm">
+                        <p>${n.message}</p>
+                        <p class="text-xs text-gray-400 mt-1">${formatIST(n.timestamp)}</p>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // Local Storage Functions
+        function saveToStorage(key, data) {
+            localStorage.setItem(key, JSON.stringify(data));
+        }
+
+        function loadFromStorage(key) {
+            const data = localStorage.getItem(key);
+            return data ? JSON.parse(data) : null;
+        }
+
+        function getTodayKey() {
+            const today = new Date();
+            const dateStr = today.toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
+            return `attendance_${currentUser.name}_${dateStr}`;
+        }
+
+        // Enhanced Location Support Detection
+        function checkLocationSupport() {
+            return new Promise((resolve) => {
+                const support = {
+                    available: false,
+                    permissions: 'unknown',
+                    https: false,
+                    iframe: false,
+                    details: []
+                };
+
+                // Check if geolocation is available
+                if (!navigator.geolocation) {
+                    support.details.push('Geolocation API not supported');
+                    updateLocationStatus('❌ Geolocation not supported by this browser', 'error');
+                    showLocationSolutions('not_supported');
+                    document.getElementById('locationError').classList.remove('hidden');
+                    resolve(support);
+                    return;
+                }
+
+                support.available = true;
+                support.details.push('Geolocation API available');
+
+                // Check HTTPS
+                support.https = location.protocol === 'https:' || location.hostname === 'localhost';
+                if (!support.https) {
+                    support.details.push('HTTPS required for location access');
+                }
+
+                // Check if in iframe
+                support.iframe = window !== window.top;
+                if (support.iframe) {
+                    support.details.push('Running in iframe - may have restrictions');
+                }
+
+                // Check permissions if available
+                if (navigator.permissions) {
+                    navigator.permissions.query({name: 'geolocation'}).then(result => {
+                        support.permissions = result.state;
+                        support.details.push(`Permission state: ${result.state}`);
+                        
+                        let statusMessage = '✅ Location services available';
+                        let statusType = 'success';
+                        
+                        if (result.state === 'denied') {
+                            statusMessage = '❌ Location access denied';
+                            statusType = 'error';
+                            showLocationSolutions('permission_denied');
+                            document.getElementById('locationError').classList.remove('hidden');
+                        } else if (result.state === 'prompt') {
+                            statusMessage = '⚠️ Location permission required';
+                            statusType = 'warning';
+                        } else if (support.iframe) {
+                            statusMessage = '⚠️ Location available (iframe detected)';
+                            statusType = 'warning';
+                        }
+                        
+                        updateLocationStatus(statusMessage, statusType);
+                        resolve(support);
+                    }).catch(() => {
+                        support.details.push('Permissions API not available');
+                        updateLocationStatus('⚠️ Location available (permissions unknown)', 'warning');
+                        resolve(support);
+                    });
+                } else {
+                    support.details.push('Permissions API not available');
+                    updateLocationStatus('⚠️ Location available (permissions unknown)', 'warning');
+                    resolve(support);
+                }
+            });
+        }
+
+        // Authentication Functions
+        function showLoginScreen() {
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('mainApp').classList.add('hidden');
+        }
+
+        function showMainApp() {
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('mainApp').classList.remove('hidden');
+            startWorkTimer();
+            checkLocationSupport().then(support => {
+                locationSupport = support;
+                console.log('Location support:', support);
+            });
+        }
+
+        function login(name, phone, department, adminPin) {
+            if (!name || !phone || !department) {
+                throw new Error('Please fill in all required fields');
+            }
+
+            const isAdmin = adminPin === CONFIG.ADMIN_PIN;
+            
+            currentUser = {
+                name,
+                phone,
+                department,
+                role: isAdmin ? 'admin' : 'staff',
+                preferences: {
+                    autoLocation: true,
+                    pushNotifications: true,
+                    darkMode: true
+                }
+            };
+
+            saveToStorage('currentUser', currentUser);
+            return currentUser;
+        }
+
+        // Enhanced Location Functions
+        function getCurrentLocation() {
+            return new Promise((resolve, reject) => {
+                if (!navigator.geolocation) {
+                    reject(new Error('Geolocation is not supported by this browser'));
+                    return;
+                }
+
+                updateLocationStatus('🔍 Getting your location...', 'info');
+
+                const options = {
+                    enableHighAccuracy: true,
+                    timeout: 45000, // Increased timeout
+                    maximumAge: 300000 // 5 minutes cache
+                };
+
+                navigator.geolocation.getCurrentPosition(
+                    position => {
+                        console.log('Location obtained:', position.coords);
+                        updateLocationStatus('✅ Location obtained successfully', 'success');
+                        resolve(position);
+                    },
+                    error => {
+                        console.error('Geolocation error:', error);
+                        let errorMessage = 'Location access failed. ';
+                        let errorType = 'unknown';
+                        
+                        switch(error.code) {
+                            case error.PERMISSION_DENIED:
+                                errorMessage += 'Permission denied by user or browser settings.';
+                                errorType = 'permission_denied';
+                                break;
+                            case error.POSITION_UNAVAILABLE:
+                                errorMessage += 'Location information is unavailable.';
+                                errorType = 'position_unavailable';
+                                break;
+                            case error.TIMEOUT:
+                                errorMessage += 'Location request timed out.';
+                                errorType = 'timeout';
+                                break;
+                            default:
+                                errorMessage += 'An unknown error occurred.';
+                                errorType = 'unknown';
+                                break;
+                        }
+                        
+                        updateLocationStatus(`❌ ${errorMessage}`, 'error');
+                        showLocationSolutions(errorType);
+                        document.getElementById('locationError').classList.remove('hidden');
+                        document.getElementById('locationErrorMessage').textContent = errorMessage;
+                        
+                        reject(new Error(errorMessage));
+                    },
+                    options
+                );
+            });
+        }
+
+        function testLocationAccess() {
+            updateLocationStatus('🧪 Testing location access...', 'info');
+            
+            if (!navigator.geolocation) {
+                updateLocationStatus('❌ Geolocation not supported', 'error');
+                showLocationSolutions('not_supported');
+                document.getElementById('locationError').classList.remove('hidden');
+                return;
+            }
+
+            // Quick test with low accuracy requirements
+            const testOptions = {
+                enableHighAccuracy: false,
+                timeout: 10000,
+                maximumAge: 600000 // 10 minutes cache
+            };
+
+            navigator.geolocation.getCurrentPosition(
+                position => {
+                    updateLocationStatus('✅ Location test successful!', 'success');
+                    showToast('Location access is working!', 'success');
+                    document.getElementById('locationError').classList.add('hidden');
+                },
+                error => {
+                    let errorType = 'unknown';
+                    switch(error.code) {
+                        case error.PERMISSION_DENIED:
+                            errorType = 'permission_denied';
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            errorType = 'position_unavailable';
+                            break;
+                        case error.TIMEOUT:
+                            errorType = 'timeout';
+                            break;
+                    }
+                    
+                    updateLocationStatus('❌ Location test failed', 'error');
+                    showLocationSolutions(errorType);
+                    document.getElementById('locationError').classList.remove('hidden');
+                    showToast('Location test failed - try manual entry', 'error');
+                },
+                testOptions
+            );
+        }
+
+        function showManualLocationForm() {
+            document.getElementById('manualLocationForm').classList.remove('hidden');
+            document.getElementById('manualLat').focus();
+        }
+
+        function hideManualLocationForm() {
+            document.getElementById('manualLocationForm').classList.add('hidden');
+            document.getElementById('manualLat').value = '';
+            document.getElementById('manualLng').value = '';
+            document.getElementById('manualAddress').value = '';
+        }
+
+        function setManualLocation() {
+            let latInput = document.getElementById('manualLat').value.trim();
+            let lngInput = document.getElementById('manualLng').value.trim();
+            const address = document.getElementById('manualAddress').value || 'Manual Entry';
+
+            // Handle empty inputs
+            if (!latInput || !lngInput) {
+                showToast('Please enter both latitude and longitude', 'error');
+                return;
+            }
+
+            // Clean up input - remove any commas, extra spaces, and handle various formats
+            latInput = latInput.replace(/,/g, '').replace(/\s+/g, '');
+            lngInput = lngInput.replace(/,/g, '').replace(/\s+/g, '');
+
+            // Handle case where user might have pasted "lat,lng" in one field
+            if (latInput.includes('.') && lngInput.includes('.')) {
+                // Both fields have decimal points, treat as separate coordinates
+            } else if (latInput.includes('.') && !lngInput.includes('.')) {
+                // Latitude has decimal, longitude doesn't - might be pasted together
+                const parts = latInput.split(/[\s,]+/);
+                if (parts.length === 2) {
+                    latInput = parts[0];
+                    lngInput = parts[1];
+                    // Update the longitude field for user feedback
+                    document.getElementById('manualLng').value = lngInput;
+                }
+            }
+
+            // Convert to numbers
+            const lat = parseFloat(latInput);
+            const lng = parseFloat(lngInput);
+
+            // Check if conversion was successful
+            if (isNaN(lat) || isNaN(lng)) {
+                showToast('Please enter valid decimal numbers (e.g., 20.2961)', 'error');
+                return;
+            }
+
+            // Validate coordinate ranges
+            if (lat < -90 || lat > 90) {
+                showToast('Latitude must be between -90 and 90', 'error');
+                return;
+            }
+
+            if (lng < -180 || lng > 180) {
+                showToast('Longitude must be between -180 and 180', 'error');
+                return;
+            }
+
+            currentLocation = { 
+                lat, 
+                lng, 
+                address: address + ' (Manual)', 
+                accuracy: 1000,
+                method: 'manual'
+            };
+
+            document.getElementById('coordinates').textContent = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+            document.getElementById('address').textContent = currentLocation.address;
+            document.getElementById('accuracy').textContent = '±1000m (Manual Entry)';
+            document.getElementById('locationDisplay').textContent = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+            document.getElementById('locationMethod').textContent = 'Manual Entry';
+            document.getElementById('locationInfo').classList.remove('hidden');
+            document.getElementById('locationError').classList.add('hidden');
+
+            updateLocationStatus('✅ Manual location set successfully', 'success');
+            hideManualLocationForm();
+            showToast('Manual location set successfully!', 'success');
+        }
+
+        async function reverseGeocode(lat, lng) {
+            try {
+                // Use Google Maps Geocoding API (free tier)
+                const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyBFw0Qbyq9zTuTlWnVG8IfyBRu-L93u7Gs`);
+                const data = await response.json();
+                
+                if (data.status === 'OK' && data.results.length > 0) {
+                    return data.results[0].formatted_address;
+                } else {
+                    // Fallback to OpenStreetMap Nominatim (free service)
+                    const osmResponse = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`);
+                    const osmData = await osmResponse.json();
+                    
+                    if (osmData && osmData.display_name) {
+                        return osmData.display_name;
+                    }
+                }
+            } catch (error) {
+                console.log('Geocoding failed, using coordinates');
+            }
+            
+            // Final fallback
+            return `Location: ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+        }
+
+        // Attendance Functions
+        function loadTodayAttendance() {
+            if (!currentUser) return;
+
+            const todayKey = getTodayKey();
+            todayAttendance = loadFromStorage(todayKey);
+            updateAttendanceUI();
+            loadQuickStats();
+        }
+
+        function updateAttendanceUI() {
+            const statusPill = document.getElementById('statusPill');
+            const checkInTime = document.getElementById('checkInTime');
+            const checkOutTime = document.getElementById('checkOutTime');
+            const breakTime = document.getElementById('breakTime');
+            const overtimeHours = document.getElementById('overtimeHours');
+            const workingHours = document.getElementById('workingHours');
+            
+            const checkInBtn = document.getElementById('checkInBtn');
+            const checkOutBtn = document.getElementById('checkOutBtn');
+            const breakStartBtn = document.getElementById('breakStartBtn');
+            const breakEndBtn = document.getElementById('breakEndBtn');
+
+            // Reset all buttons to enabled state first
+            [checkInBtn, checkOutBtn, breakStartBtn, breakEndBtn].forEach(btn => {
+                btn.classList.remove('disabled');
+            });
+
+            if (!todayAttendance) {
+                statusPill.className = 'status-pill status-none';
+                statusPill.textContent = '—';
+                checkInTime.textContent = '—';
+                checkOutTime.textContent = '—';
+                breakTime.textContent = '—';
+                overtimeHours.textContent = '—';
+                workingHours.textContent = '0h 0m';
+                
+                // Only check-in should be available initially
+                checkOutBtn.classList.add('disabled');
+                breakStartBtn.classList.add('disabled');
+                breakEndBtn.classList.add('disabled');
+                
+                // Update status text
+                checkInBtn.querySelector('.attendance-status').textContent = 'Ready';
+                checkOutBtn.querySelector('.attendance-status').textContent = 'Pending';
+            } else {
+                workingHours.textContent = calculateWorkingHours();
+                
+                if (todayAttendance.checkInAt) {
+                    checkInTime.textContent = formatIST(new Date(todayAttendance.checkInAt));
+                    // After check-in, disable check-in button
+                    checkInBtn.classList.add('disabled');
+                    checkInBtn.querySelector('.attendance-status').textContent = 'Completed';
+                }
+                
+                if (todayAttendance.checkOutAt) {
+                    checkOutTime.textContent = formatIST(new Date(todayAttendance.checkOutAt));
+                    statusPill.className = 'status-pill status-complete';
+                    statusPill.textContent = 'Completed';
+                    
+                    // After check-out, disable all buttons
+                    [checkOutBtn, breakStartBtn, breakEndBtn].forEach(btn => {
+                        btn.classList.add('disabled');
+                    });
+                    
+                    checkOutBtn.querySelector('.attendance-status').textContent = 'Completed';
+                } else if (todayAttendance.onBreak) {
+                    statusPill.className = 'status-pill status-break';
+                    statusPill.textContent = 'On Break';
+                    
+                    // On break: can check-out or end break, but not start break
+                    breakStartBtn.classList.add('disabled');
+                    checkOutBtn.querySelector('.attendance-status').textContent = 'Available';
+                } else if (todayAttendance.checkInAt) {
+                    statusPill.className = 'status-pill status-in';
+                    statusPill.textContent = 'Checked-In';
+                    
+                    // Checked in: can check-out or start break, but not end break
+                    breakEndBtn.classList.add('disabled');
+                    checkOutBtn.querySelector('.attendance-status').textContent = 'Available';
+                }
+                
+                breakTime.textContent = formatDuration(todayAttendance.totalBreakTime || 0);
+                
+                // Calculate overtime
+                if (todayAttendance.checkInAt) {
+                    const workMinutes = Math.floor((new Date() - new Date(todayAttendance.checkInAt)) / (1000 * 60));
+                    const standardWorkDay = 9 * 60; // 9 hours
+                    const overtime = Math.max(0, workMinutes - standardWorkDay - (todayAttendance.totalBreakTime || 0));
+                    overtimeHours.textContent = formatDuration(overtime);
+                }
+            }
+        }
+
+        function loadQuickStats() {
+            if (!currentUser) return;
+
+            // Load from localStorage - simplified stats
+            const allAttendance = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key.startsWith(`attendance_${currentUser.name}_`)) {
+                    const data = loadFromStorage(key);
+                    if (data) allAttendance.push(data);
+                }
+            }
+
+            // Calculate stats
+            const thisMonth = allAttendance.filter(a => {
+                const date = new Date(a.checkInAt);
+                const now = new Date();
+                return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
+            });
+
+            let totalMinutes = 0;
+            thisMonth.forEach(a => {
+                if (a.checkInAt && a.checkOutAt) {
+                    const duration = (new Date(a.checkOutAt) - new Date(a.checkInAt)) / (1000 * 60);
+                    totalMinutes += duration - (a.totalBreakTime || 0);
+                }
+            });
+
+            document.getElementById('monthlyDays').textContent = thisMonth.length;
+            document.getElementById('weeklyHours').textContent = formatDuration(totalMinutes);
+            document.getElementById('avgHours').textContent = formatDuration(thisMonth.length > 0 ? totalMinutes / thisMonth.length : 0);
+        }
+
+        function startWorkTimer() {
+            if (workTimer) clearInterval(workTimer);
+            
+            workTimer = setInterval(() => {
+                if (todayAttendance && todayAttendance.checkInAt && !todayAttendance.checkOutAt) {
+                    document.getElementById('workingHours').textContent = calculateWorkingHours();
+                }
+            }, 60000); // Update every minute
+        }
+
+        async function checkIn() {
+            // Check if button is disabled
+            const checkInBtn = document.getElementById('checkInBtn');
+            if (checkInBtn.classList.contains('disabled')) {
+                showToast('Already checked in today!', 'warning');
+                return;
+            }
+
+            if (!currentLocation) {
+                showToast('Please get your location first', 'error');
+                return;
+            }
+
+            const now = new Date();
+            const todayKey = getTodayKey();
+
+            todayAttendance = {
+                name: currentUser.name,
+                phone: currentUser.phone,
+                department: currentUser.department,
+                date: now.toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' }),
+                checkInAt: now.toISOString(),
+                checkInLat: currentLocation.lat,
+                checkInLng: currentLocation.lng,
+                checkInAddress: currentLocation.address,
+                checkInMethod: currentLocation.method || 'gps',
+                status: 'checked-in',
+                totalBreakTime: 0,
+                onBreak: false,
+                notes: ''
+            };
+
+            saveToStorage(todayKey, todayAttendance);
+            updateAttendanceUI();
+            addNotification('Successfully checked in!', 'success');
+            showToast('Checked in successfully!', 'success');
+        }
+
+        async function checkOut() {
+            // Check if button is disabled
+            const checkOutBtn = document.getElementById('checkOutBtn');
+            if (checkOutBtn.classList.contains('disabled')) {
+                showToast('Cannot check out - not checked in yet!', 'warning');
+                return;
+            }
+
+            if (!todayAttendance || !todayAttendance.checkInAt) {
+                showToast('Please check in first!', 'error');
+                return;
+            }
+
+            if (!currentLocation) {
+                showToast('Please get your location first', 'error');
+                return;
+            }
+
+            const now = new Date();
+            const todayKey = getTodayKey();
+
+            // End any active break
+            if (todayAttendance.onBreak && todayAttendance.breakStartAt) {
+                const breakDuration = Math.floor((now - new Date(todayAttendance.breakStartAt)) / (1000 * 60));
+                todayAttendance.totalBreakTime = (todayAttendance.totalBreakTime || 0) + breakDuration;
+            }
+
+            todayAttendance.checkOutAt = now.toISOString();
+            todayAttendance.checkOutLat = currentLocation.lat;
+            todayAttendance.checkOutLng = currentLocation.lng;
+            todayAttendance.checkOutAddress = currentLocation.address;
+            todayAttendance.checkOutMethod = currentLocation.method || 'gps';
+            todayAttendance.status = 'completed';
+            todayAttendance.onBreak = false;
+
+            saveToStorage(todayKey, todayAttendance);
+            updateAttendanceUI();
+            addNotification('Successfully checked out!', 'success');
+            showToast('Checked out successfully!', 'success');
+        }
+
+        async function startBreak() {
+            if (!todayAttendance || !todayAttendance.checkInAt) {
+                showToast('Please check in first!', 'error');
+                return;
+            }
+
+            if (todayAttendance.onBreak) {
+                showToast('Already on break!', 'warning');
+                return;
+            }
+
+            if (todayAttendance.checkOutAt) {
+                showToast('Cannot start break after check out!', 'warning');
+                return;
+            }
+
+            const now = new Date();
+            const todayKey = getTodayKey();
+
+            todayAttendance.onBreak = true;
+            todayAttendance.breakStartAt = now.toISOString();
+
+            saveToStorage(todayKey, todayAttendance);
+            updateAttendanceUI();
+            addNotification('Break started', 'info');
+            showToast('Break started successfully!', 'success');
+        }
+
+        async function endBreak() {
+            if (!todayAttendance || !todayAttendance.onBreak) {
+                showToast('Not currently on break!', 'error');
+                return;
+            }
+
+            if (!todayAttendance.breakStartAt) {
+                showToast('Break start time not found!', 'error');
+                return;
+            }
+
+            const now = new Date();
+            const todayKey = getTodayKey();
+            
+            const breakDuration = Math.floor((now - new Date(todayAttendance.breakStartAt)) / (1000 * 60));
+            todayAttendance.totalBreakTime = (todayAttendance.totalBreakTime || 0) + breakDuration;
+            todayAttendance.onBreak = false;
+            delete todayAttendance.breakStartAt;
+
+            saveToStorage(todayKey, todayAttendance);
+            updateAttendanceUI();
+            addNotification(`Break ended (${formatDuration(breakDuration)})`, 'info');
+            showToast(`Break ended (${formatDuration(breakDuration)})`, 'success');
+        }
+
+        function generateWhatsAppMessage() {
+            if (!todayAttendance) {
+                showToast('No attendance data available', 'error');
+                return;
+            }
+
+            let message = '';
+
+            // Check if this is a check-out message (completed day) or check-in message
+            if (todayAttendance.checkOutAt) {
+                // CHECK-OUT MESSAGE - Detailed format
+                message = `🏢 A to Z Packers & Movers — Daily Report\n\n`;
+                message += `👤 Employee: ${todayAttendance.name}\n`;
+                message += `📅 Date: ${todayAttendance.date}\n`;
+                message += `⏰ Check-In: ${formatIST(new Date(todayAttendance.checkInAt))} IST\n`;
+                message += `⏰ Check-Out: ${formatIST(new Date(todayAttendance.checkOutAt))} IST\n`;
+                
+                if (todayAttendance.checkInAddress) {
+                    message += `📍 Location: ${todayAttendance.checkInAddress}\n`;
+                }
+                
+                message += `⏱️ Total Hours: ${calculateWorkingHours()}\n`;
+                message += `☕ Break Time: ${formatDuration(todayAttendance.totalBreakTime || 0)}\n`;
+                
+                // Add map link for check-out
+                if (todayAttendance.checkOutLat && todayAttendance.checkOutLng) {
+                    message += `🗺️ Map: https://maps.google.com/?q=${todayAttendance.checkOutLat},${todayAttendance.checkOutLng}`;
+                } else if (todayAttendance.checkInLat && todayAttendance.checkInLng) {
+                    message += `🗺️ Map: https://maps.google.com/?q=${todayAttendance.checkInLat},${todayAttendance.checkInLng}`;
+                }
+            } else {
+                // CHECK-IN MESSAGE - Simple format
+                message = `🏢 A to Z Packers & Movers — Check-In\n\n`;
+                message += `👤 Employee: ${todayAttendance.name}\n`;
+                message += `📅 Date: ${todayAttendance.date}\n`;
+                message += `⏰ Check-In: ${formatIST(new Date(todayAttendance.checkInAt))} IST\n`;
+                
+                if (todayAttendance.checkInAddress) {
+                    message += `📍 Location: ${todayAttendance.checkInAddress}\n`;
+                }
+                
+                // Add map link for check-in
+                if (todayAttendance.checkInLat && todayAttendance.checkInLng) {
+                    message += `🗺️ Map: https://maps.google.com/?q=${todayAttendance.checkInLat},${todayAttendance.checkInLng}`;
+                }
+            }
+
+            const whatsappUrl = `https://wa.me/${CONFIG.BOSS_WHATSAPP_E164.replace('+', '')}?text=${encodeURIComponent(message)}`;
+            window.open(whatsappUrl, '_blank');
+        }
+
+        function loadHistory(filter = 'week') {
+            if (!currentUser) return;
+
+            const allAttendance = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key.startsWith(`attendance_${currentUser.name}_`)) {
+                    const data = loadFromStorage(key);
+                    if (data) allAttendance.push(data);
+                }
+            }
+
+            // Filter by date range
+            let filteredAttendance = allAttendance;
+            const now = new Date();
+            
+            if (filter === 'week') {
+                const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                filteredAttendance = allAttendance.filter(a => new Date(a.checkInAt) >= weekAgo);
+            } else if (filter === 'month') {
+                filteredAttendance = allAttendance.filter(a => {
+                    const date = new Date(a.checkInAt);
+                    return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
+                });
+            }
+
+            // Sort by date (newest first)
+            filteredAttendance.sort((a, b) => new Date(b.checkInAt) - new Date(a.checkInAt));
+
+            const historyHtml = filteredAttendance.map(data => {
+                const duration = data.checkOutAt ? 
+                    Math.floor((new Date(data.checkOutAt) - new Date(data.checkInAt)) / (1000 * 60)) - (data.totalBreakTime || 0) :
+                    0;
+                
+                return `
+                    <div class="bg-gray-700 rounded-lg p-3">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="font-medium">${data.date}</span>
+                            <span class="text-sm ${data.status === 'completed' ? 'text-green-400' : 'text-yellow-400'}">
+                                ${data.status === 'completed' ? '✅ Completed' : '⏳ In Progress'}
+                            </span>
+                        </div>
+                        <div class="text-sm text-gray-300 space-y-1">
+                            <p>In: ${formatIST(new Date(data.checkInAt))} ${data.checkInMethod ? `(${data.checkInMethod})` : ''}</p>
+                            ${data.checkOutAt ? `<p>Out: ${formatIST(new Date(data.checkOutAt))} ${data.checkOutMethod ? `(${data.checkOutMethod})` : ''}</p>` : ''}
+                            ${data.checkOutAt ? `<p>Duration: ${formatDuration(duration)}</p>` : ''}
+                            ${data.totalBreakTime ? `<p>Break: ${formatDuration(data.totalBreakTime)}</p>` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('historyList').innerHTML = historyHtml || '<p class="text-gray-400">No attendance records found</p>';
+        }
+
+        function loadProfile() {
+            if (!currentUser) return;
+
+            document.getElementById('profileName').value = currentUser.name;
+            document.getElementById('profilePhone').value = currentUser.phone;
+            document.getElementById('profileDepartment').value = currentUser.department;
+            
+            if (currentUser.preferences) {
+                document.getElementById('autoLocation').checked = currentUser.preferences.autoLocation;
+                document.getElementById('pushNotifications').checked = currentUser.preferences.pushNotifications;
+                document.getElementById('darkMode').checked = currentUser.preferences.darkMode;
+            }
+        }
+
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check if user is already logged in
+            const savedUser = loadFromStorage('currentUser');
+            if (savedUser) {
+                currentUser = savedUser;
+                document.getElementById('userInfo').textContent = `Welcome, ${currentUser.name}!`;
+                
+                if (currentUser.role === 'admin') {
+                    document.getElementById('showAdminView').classList.remove('hidden');
+                }
+                
+                showMainApp();
+                loadTodayAttendance();
+            } else {
+                showLoginScreen();
+            }
+
+            // Login action
+            document.getElementById('loginBtn').addEventListener('click', async () => {
+                const name = document.getElementById('employeeName').value;
+                const phone = document.getElementById('employeePhone').value;
+                const department = document.getElementById('employeeDepartment').value;
+                const adminPin = document.getElementById('adminPin').value;
+
+                try {
+                    login(name, phone, department, adminPin);
+                    document.getElementById('userInfo').textContent = `Welcome, ${currentUser.name}!`;
+                    
+                    if (currentUser.role === 'admin') {
+                        document.getElementById('showAdminView').classList.remove('hidden');
+                    }
+                    
+                    showMainApp();
+                    loadTodayAttendance();
+                } catch (error) {
+                    showToast(error.message, 'error');
+                }
+            });
+
+            // Menu actions
+            document.getElementById('menuBtn').addEventListener('click', () => {
+                document.getElementById('menuOverlay').classList.remove('hidden');
+            });
+
+            document.getElementById('closeMenu').addEventListener('click', () => {
+                document.getElementById('menuOverlay').classList.add('hidden');
+            });
+
+            // View switching
+            function showHomeView() {
+                document.querySelectorAll('[id$="View"]').forEach(view => view.classList.add('hidden'));
+                document.getElementById('attendanceView').classList.remove('hidden');
+                document.getElementById('menuOverlay').classList.add('hidden');
+                
+                // Reset navigation menu - ensure all menu items are visible and accessible
+                resetNavigationMenu();
+            }
+
+            function resetNavigationMenu() {
+                // Show all menu items that should be available
+                document.getElementById('showAttendanceView').classList.remove('hidden');
+                document.getElementById('showHistoryView').classList.remove('hidden');
+                document.getElementById('showProfileView').classList.remove('hidden');
+                
+                // Show admin menu if user is admin
+                if (currentUser && currentUser.role === 'admin') {
+                    document.getElementById('showAdminView').classList.remove('hidden');
+                }
+                
+                // Ensure logout button is always visible
+                document.getElementById('logoutBtn').classList.remove('hidden');
+                
+                // Reset any menu states or selections
+                const menuButtons = document.querySelectorAll('#menuOverlay button');
+                menuButtons.forEach(btn => {
+                    btn.classList.remove('active', 'selected');
+                });
+                
+                console.log('Navigation menu reset - all options available');
+            }
+
+            document.getElementById('showAttendanceView').addEventListener('click', showHomeView);
+
+            document.getElementById('showHistoryView').addEventListener('click', () => {
+                document.querySelectorAll('[id$="View"]').forEach(view => view.classList.add('hidden'));
+                document.getElementById('historyView').classList.remove('hidden');
+                document.getElementById('menuOverlay').classList.add('hidden');
+                loadHistory();
+            });
+
+            document.getElementById('showProfileView').addEventListener('click', () => {
+                document.querySelectorAll('[id$="View"]').forEach(view => view.classList.add('hidden'));
+                document.getElementById('profileView').classList.remove('hidden');
+                document.getElementById('menuOverlay').classList.add('hidden');
+                loadProfile();
+            });
+
+            document.getElementById('showAdminView').addEventListener('click', () => {
+                document.querySelectorAll('[id$="View"]').forEach(view => view.classList.add('hidden'));
+                document.getElementById('adminView').classList.remove('hidden');
+                document.getElementById('menuOverlay').classList.add('hidden');
+            });
+
+            // Home button event listeners for all views
+            document.getElementById('homeFromHistory').addEventListener('click', showHomeView);
+            document.getElementById('homeFromProfile').addEventListener('click', showHomeView);
+            document.getElementById('homeFromAdmin').addEventListener('click', showHomeView);
+
+            document.getElementById('logoutBtn').addEventListener('click', () => {
+                localStorage.removeItem('currentUser');
+                currentUser = null;
+                if (workTimer) clearInterval(workTimer);
+                showLoginScreen();
+            });
+
+            // Notification panel
+            document.getElementById('notificationBtn').addEventListener('click', () => {
+                const panel = document.getElementById('notificationPanel');
+                panel.classList.toggle('hidden');
+                // Mark all as read when opened
+                notifications.forEach(n => n.read = true);
+                updateNotificationUI();
+            });
+
+            // Location action
+            document.getElementById('getLocationBtn').addEventListener('click', async () => {
+                try {
+                    showToast('Getting location...', 'info');
+                    const position = await getCurrentLocation();
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+                    const accuracy = position.coords.accuracy;
+                    const address = await reverseGeocode(lat, lng);
+
+                    currentLocation = { lat, lng, address, accuracy, method: 'gps' };
+
+                    document.getElementById('coordinates').textContent = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+                    document.getElementById('address').textContent = address;
+                    document.getElementById('accuracy').textContent = `±${Math.round(accuracy)}m`;
+                    document.getElementById('locationDisplay').textContent = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+                    document.getElementById('locationMethod').textContent = 'GPS';
+                    document.getElementById('locationInfo').classList.remove('hidden');
+                    document.getElementById('locationError').classList.add('hidden');
+
+                    showToast('Location updated successfully!', 'success');
+                } catch (error) {
+                    console.error('Location error:', error);
+                    showToast('Location access failed', 'error');
+                }
+            });
+
+            document.getElementById('checkInBtn').addEventListener('click', checkIn);
+            document.getElementById('checkOutBtn').addEventListener('click', checkOut);
+            document.getElementById('breakStartBtn').addEventListener('click', startBreak);
+            document.getElementById('breakEndBtn').addEventListener('click', endBreak);
+            
+            document.getElementById('sendToBossBtn').addEventListener('click', () => {
+                if (!todayAttendance) {
+                    showToast('No attendance data to send', 'error');
+                    return;
+                }
+                generateWhatsAppMessage();
+            });
+
+            document.getElementById('emergencyBtn').addEventListener('click', () => {
+                if (!currentLocation) {
+                    showToast('Please get your location first', 'error');
+                    return;
+                }
+                
+                const message = `🚨 EMERGENCY ALERT - A to Z Packers & Movers\n\nEmployee needs immediate assistance!\n\nLocation: ${currentLocation.lat},${currentLocation.lng}\nAddress: ${currentLocation.address}\nTime: ${formatIST(new Date())} IST\n\nMap: https://maps.google.com/?q=${currentLocation.lat},${currentLocation.lng}`;
+                const whatsappUrl = `https://wa.me/${CONFIG.BOSS_WHATSAPP_E164.replace('+', '')}?text=${encodeURIComponent(message)}`;
+                window.open(whatsappUrl, '_blank');
+                showToast('Emergency alert sent!', 'warning');
+            });
+
+            // Notes
+            document.getElementById('saveNotesBtn').addEventListener('click', async () => {
+                if (!todayAttendance) {
+                    showToast('No attendance record for today', 'error');
+                    return;
+                }
+
+                const notes = document.getElementById('dailyNotes').value;
+                const todayKey = getTodayKey();
+                
+                todayAttendance.notes = notes;
+                saveToStorage(todayKey, todayAttendance);
+                showToast('Notes saved successfully!', 'success');
+            });
+
+            // History filter
+            document.getElementById('historyFilter').addEventListener('change', (e) => {
+                loadHistory(e.target.value);
+            });
+
+            // Profile update
+            document.getElementById('updateProfileBtn').addEventListener('click', async () => {
+                const phone = document.getElementById('profilePhone').value;
+                const department = document.getElementById('profileDepartment').value;
+                const preferences = {
+                    autoLocation: document.getElementById('autoLocation').checked,
+                    pushNotifications: document.getElementById('pushNotifications').checked,
+                    darkMode: document.getElementById('darkMode').checked
+                };
+
+                currentUser.phone = phone;
+                currentUser.department = department;
+                currentUser.preferences = preferences;
+                
+                saveToStorage('currentUser', currentUser);
+                showToast('Profile updated successfully!', 'success');
+            });
+
+            // Export functionality
+            document.getElementById('exportBtn').addEventListener('click', () => {
+                const allAttendance = [];
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key.startsWith(`attendance_${currentUser.name}_`)) {
+                        const data = loadFromStorage(key);
+                        if (data) allAttendance.push(data);
+                    }
+                }
+                
+                const csvContent = "data:text/csv;charset=utf-8," 
+                    + "Date,Check In,Check Out,Break Time,Total Hours,Notes\n"
+                    + allAttendance.map(a => {
+                        const duration = a.checkOutAt ? 
+                            Math.floor((new Date(a.checkOutAt) - new Date(a.checkInAt)) / (1000 * 60)) - (a.totalBreakTime || 0) :
+                            0;
+                        return `${a.date},${formatIST(new Date(a.checkInAt))},${a.checkOutAt ? formatIST(new Date(a.checkOutAt)) : ''},${formatDuration(a.totalBreakTime || 0)},${formatDuration(duration)},"${a.notes || ''}"`;
+                    }).join("\n");
+
+                const encodedUri = encodeURI(csvContent);
+                const link = document.createElement("a");
+                link.setAttribute("href", encodedUri);
+                link.setAttribute("download", `attendance_${currentUser.name}_${new Date().toISOString().split('T')[0]}.csv`);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                showToast('Attendance data exported!', 'success');
+            });
+
+            // Close notification panel when clicking outside
+            document.addEventListener('click', (e) => {
+                const panel = document.getElementById('notificationPanel');
+                const btn = document.getElementById('notificationBtn');
+                if (!panel.contains(e.target) && !btn.contains(e.target)) {
+                    panel.classList.add('hidden');
+                }
+            });
+
+            // Load daily notes if exists
+            setTimeout(() => {
+                if (todayAttendance && todayAttendance.notes) {
+                    document.getElementById('dailyNotes').value = todayAttendance.notes;
+                }
+            }, 1000);
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9798738ab6e1836f',t:'MTc1NjkzNjEwOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
