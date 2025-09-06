@@ -1,0 +1,676 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>A to Z Packers & Movers — Fuel Consumption Entry & Reporting</title>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
+<style>
+  :root{--olive:#556B2F;--blue:#1E88E5;--black:#0f172a;--red:#D32F2F;--yellow:#FBC02D;--green:#2E7D32;
+    --card:#ffffff;--muted:#64748b;--shadow:0 8px 22px rgba(0,0,0,.10);--blueShadow:0 16px 40px rgba(30,136,229,.28);--radius:16px}
+  *{box-sizing:border-box} body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;background:#fff;color:var(--black)}
+  header{background:linear-gradient(90deg,var(--olive),var(--blue));color:#fff;padding:18px 14px;text-align:center;position:sticky;top:0;z-index:10}
+  header h1{font-size:1.25rem;margin:0 0 6px;font-weight:900}
+  .wrap{max-width:1024px;margin:22px auto;padding:0 14px}
+  .card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;margin-bottom:16px;border:1px solid #eef2f7}
+  .card.fuel{box-shadow:var(--blueShadow);border-color:#cfe3fb}
+  .grid{display:grid;gap:12px} @media(min-width:720px){.grid.cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  label{font-weight:900;font-size:.95rem;display:block;margin-bottom:6px}
+  input,select{width:100%;padding:12px;border-radius:12px;border:1px solid #d6deea;outline:none;font-size:1rem;background:#fff;font-weight:700}
+  input:disabled,select:disabled{background:#f1f5f9;color:#9aa4b2}
+  .controls{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
+  button{border:0;padding:12px 16px;border-radius:12px;color:#fff;font-weight:900;cursor:pointer;box-shadow:var(--shadow)}
+  .btn-olive{background:var(--olive)} .btn-blue{background:var(--blue)} .btn-red{background:var(--red)} .btn-yellow{background:var(--yellow);color:#111} .btn-black{background:#111}
+  .muted{color:var(--muted);font-size:.9rem} .tiny{padding:6px 8px;border-radius:10px;font-size:.85rem}
+  .chip{display:inline-flex;gap:6px;padding:4px 8px;border-radius:999px;font-weight:800;background:#eef2ff;color:#1e40af;border:1px solid #c7d2fe}
+  .total-box{background:#e8f5e9;border:2px solid var(--green);color:#0b4211;border-radius:18px;padding:16px;font-weight:900;display:grid;gap:6px}
+  .thumb{margin-left:6px;font-size:1.2rem;display:none}.thumb.show{display:inline}
+  table{width:100%;border-collapse:collapse;font-size:.95rem} th,td{padding:10px 8px;border-bottom:1px solid #eef2f6;text-align:left}
+  .row-actions{display:flex;gap:8px;flex-wrap:wrap}
+  .sideBox{background:#eef6ff;border:2px dashed #9cc3ff;padding:12px;border-radius:12px;font-weight:800;color:#0b3a70}
+  .toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:#1b5e20;color:#fff;padding:10px 14px;border-radius:999px;box-shadow:var(--shadow);display:none;z-index:60}
+  .modal-backdrop{position:fixed;inset:0;background:rgba(2,6,23,.5);display:none;align-items:center;justify-content:center;z-index:50}
+  .modal{background:#fff;border-radius:16px;max-width:720px;width:min(96vw,720px);padding:18px;border:1px solid #eef2f7}
+  .modal .x{float:right;border:0;background:#111;color:#fff;border-radius:10px;padding:6px 10px;cursor:pointer}
+</style>
+</head>
+<body>
+<header>
+  <h1>Fuel Consumption Entry & Reporting</h1>
+  <div class="sub">A to Z Packers & Movers • Boss WhatsApp: <strong>9338888550</strong></div>
+  <div style="margin-top:8px">
+    <button type="button" id="btnRestartAll" class="btn-red tiny">🔄 Restart (Clear All)</button>
+  </div>
+</header>
+
+<div class="wrap">
+  <!-- SETTINGS -->
+  <section class="card">
+    <h3 style="margin:0 0 10px">Settings & Master Lists</h3>
+    <div class="grid cols-2">
+      <div>
+        <label for="boss1">Boss WhatsApp #1</label>
+        <input id="boss1" type="tel" value="+919338888550" />
+      </div>
+      <div>
+        <label for="boss2">Boss WhatsApp #2 (optional)</label>
+        <input id="boss2" type="tel" placeholder="+91XXXXXXXXXX" />
+      </div>
+
+      <div>
+        <label>Driver (select)</label>
+        <div class="grid" style="grid-template-columns:1fr auto;gap:8px">
+          <select id="driverSel"></select>
+          <button type="button" id="addDriver" class="btn-blue tiny">+ Add</button>
+        </div>
+        <input id="driverNew" type="text" placeholder="Type driver name & click + Add" style="margin-top:6px" />
+      </div>
+
+      <div>
+        <label>Vehicle (select)</label>
+        <div class="grid" style="grid-template-columns:1fr auto;gap:8px">
+          <select id="vehicleSel"></select>
+          <button type="button" id="addVehicle" class="btn-olive tiny">+ Add</button>
+        </div>
+        <div class="grid" style="grid-template-columns:2fr 1fr;gap:8px;margin-top:6px">
+          <input id="vehicleNew" type="text" placeholder="OD 05 BD 8855" />
+          <input id="vehicleInit" type="number" inputmode="numeric" placeholder="Initial Meter (optional)" />
+        </div>
+
+        <div class="grid" style="grid-template-columns:2fr auto;gap:8px;margin-top:8px">
+          <input id="initMeterInput" type="number" inputmode="numeric" placeholder="Set initial meter (one-time)" style="display:none" />
+          <button type="button" id="setInitMeterBtn" class="btn-black tiny" style="display:none">Set Initial Meter</button>
+        </div>
+        <div class="muted" style="margin-top:6px">Initial meter can be set now or later (one-time per vehicle).</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FUEL ENTRY -->
+  <section class="card fuel">
+    <h3 style="margin:0 0 10px">Fuel Entry</h3>
+
+    <div class="grid cols-2" style="margin-bottom:8px;align-items:end">
+      <div class="sideBox">
+        <label for="gpsSnap">GPS Camera Screenshot (optional)</label>
+        <input id="gpsSnap" type="file" accept="image/*" capture="environment" />
+        <div style="margin-top:8px">
+          <input id="gpsApprove" type="checkbox" />
+          <label for="gpsApprove">I confirm the GPS screenshot is clear</label>
+        </div>
+        <div class="muted" style="margin-top:6px">Form is usable even without photo.</div>
+      </div>
+      <div class="muted">Best on Android Chrome / iOS Safari.</div>
+    </div>
+
+    <div class="grid cols-2">
+      <div>
+        <label for="meterStart">Meter Starting Reading</label>
+        <input id="meterStart" type="number" inputmode="numeric" placeholder="Auto or manual" />
+      </div>
+      <div>
+        <label for="meterEnd">Meter Ending Reading</label>
+        <input id="meterEnd" type="number" inputmode="numeric" placeholder="e.g., 78522" />
+      </div>
+
+      <div>
+        <label for="partyLocation">Party Location</label>
+        <input id="partyLocation" type="text" placeholder="e.g., Cuttack → Bhubaneswar" />
+      </div>
+
+      <div>
+        <label for="litres">Fuel Filled (in Litres) — optional</label>
+        <input id="litres" type="number" step="0.01" inputmode="decimal" placeholder="(not used in formula)" />
+      </div>
+
+      <div>
+        <label for="pricePerLitre">Price per Litre (₹)</label>
+        <input id="pricePerLitre" type="number" step="0.01" inputmode="decimal" value="93" />
+      </div>
+
+      <div>
+        <label for="mileage">Vehicle Mileage (KM:1)</label>
+        <select id="mileage"></select>
+      </div>
+    </div>
+
+    <div style="margin-top:12px">
+      <label>Survey & Material Report? <span class="chip">Optional</span></label>
+      <label><input id="srYes" type="radio" name="sr" value="yes"> Yes <span id="thumb" class="thumb">👍</span></label>
+      <label><input id="srNo" type="radio" name="sr" value="no" checked> No</label>
+    </div>
+
+    <div class="total-box" style="margin-top:14px">
+      <div>📏 Distance: <span id="outDistance">0</span> km</div>
+      <div>🛞 Mileage: <span id="outMileage">8.0</span>:1</div>
+      <div>💵 Price/Litre: ₹<span id="outPpl">93.00</span></div>
+      <div>🧮 Consumption Amount: <span id="outConsumption">₹0.00</span></div>
+      <div style="font-size:1.25rem">⚖ Total: <span id="outTotal" style="font-weight:900">₹0.00</span></div>
+    </div>
+
+    <div class="controls">
+      <button type="button" class="btn-blue" id="btnAdd">➕ Add to Session</button>
+      <button type="button" class="btn-olive" id="btnSend">📤 Send (Primary) to WhatsApp</button>
+      <button type="button" class="btn-yellow" id="btnReset">Reset</button>
+    </div>
+
+    <div id="lockNote" class="muted" style="display:none;margin-top:6px">
+      Start meter is locked to the last entry for this vehicle and cannot be edited.
+    </div>
+  </section>
+
+  <!-- SESSION LIST -->
+  <section class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <h3 style="margin:0">Added Records (This Session)</h3>
+      <div class="row-actions">
+        <button type="button" class="btn-olive tiny" id="btnSessionWA">📤 WhatsApp (Session → Boss #1)</button>
+        <button type="button" class="btn-blue tiny" id="btnMonthPDF">📄 Monthly PDF</button>
+      </div>
+    </div>
+    <div style="overflow:auto">
+      <table>
+        <thead><tr><th>#</th><th>Driver</th><th>Vehicle</th><th>Start</th><th>End</th><th>KM</th><th>Mileage</th><th>Consumption (₹)</th><th></th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- STORED LIST -->
+  <section class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <h3 style="margin:0">Stored Records (All Time)</h3>
+      <div class="row-actions">
+        <button type="button" class="btn-olive tiny" id="btnStoreWA">📤 WhatsApp (to Boss #1 & #2)</button>
+        <button type="button" class="btn-blue tiny" id="btnStorePDF">📄 PDF (All Records)</button>
+      </div>
+    </div>
+    <div class="muted" style="margin:6px 0 12px">Automatically keeps all final-submitted entries.</div>
+    <div style="overflow:auto;max-height:360px">
+      <table>
+        <thead><tr><th>Date</th><th>Driver</th><th>Vehicle</th><th>Start</th><th>End</th><th>KM</th><th>Mileage</th><th>Consumption (₹)</th></tr></thead>
+        <tbody id="storeRows"></tbody>
+      </table>
+    </div>
+  </section>
+</div>
+
+<!-- FINAL MODAL -->
+<div id="modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal">
+    <button type="button" class="x" id="modalClose" aria-label="Close">×</button>
+    <h3 id="modalTitle" style="margin:0 0 8px">Fuel Filled by Boss — Final WhatsApp</h3>
+    <div class="muted" style="margin-bottom:8px">Sends the same data (text only) + settlement lines.</div>
+    <div class="grid cols-2">
+      <div><label for="bossAmount">Boss Amount (₹)</label><input id="bossAmount" type="number" step="0.01" inputmode="decimal" value="3000" /></div>
+      <div><label for="bossNote">Note (optional)</label><input id="bossNote" type="text" placeholder="e.g., cash / UPI" /></div>
+    </div>
+    <div class="controls" style="margin-top:12px">
+      <button type="button" class="btn-olive" id="btnFinalSend">📤 Send Final (Text Only)</button>
+      <button type="button" class="btn-red" id="btnModalClose2">Close</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast">Saved</div>
+
+<script>
+(function(){
+  /* =============== ELEMENTS & KEYS =============== */
+  const boss1=document.getElementById('boss1'), boss2=document.getElementById('boss2');
+  const driverSel=document.getElementById('driverSel'), vehicleSel=document.getElementById('vehicleSel');
+  const addDriverBtn=document.getElementById('addDriver'), addVehicleBtn=document.getElementById('addVehicle');
+  const driverNew=document.getElementById('driverNew'), vehicleNew=document.getElementById('vehicleNew'), vehicleInit=document.getElementById('vehicleInit');
+  const initMeterInput=document.getElementById('initMeterInput'), setInitMeterBtn=document.getElementById('setInitMeterBtn');
+  const gpsSnap=document.getElementById('gpsSnap'), gpsApprove=document.getElementById('gpsApprove');
+  const meterStart=document.getElementById('meterStart'), meterEnd=document.getElementById('meterEnd'), partyLocation=document.getElementById('partyLocation');
+  const litres=document.getElementById('litres'), pricePerLitre=document.getElementById('pricePerLitre'), mileage=document.getElementById('mileage');
+  const thumb=document.getElementById('thumb'), lockNote=document.getElementById('lockNote');
+  const outDistance=document.getElementById('outDistance'), outMileage=document.getElementById('outMileage'), outPpl=document.getElementById('outPpl'), outTotal=document.getElementById('outTotal'), outConsumption=document.getElementById('outConsumption');
+  const rows=document.getElementById('rows'), btnAdd=document.getElementById('btnAdd'), btnSend=document.getElementById('btnSend'), btnReset=document.getElementById('btnReset'), btnSessionWA=document.getElementById('btnSessionWA'), btnMonthPDF=document.getElementById('btnMonthPDF');
+  const storeRows=document.getElementById('storeRows'), btnStoreWA=document.getElementById('btnStoreWA'), btnStorePDF=document.getElementById('btnStorePDF');
+  const modal=document.getElementById('modal'), modalClose=document.getElementById('modalClose'), btnModalClose2=document.getElementById('btnModalClose2'), btnFinalSend=document.getElementById('btnFinalSend'), bossAmount=document.getElementById('bossAmount'), bossNote=document.getElementById('bossNote');
+  const toast=document.getElementById('toast');const btnRestartAll = document.getElementById('btnRestartAll');
+
+  const STORAGE_PREFIX='az_fuel_', KEY_DRIVERS=STORAGE_PREFIX+'drivers', KEY_VEHICLES=STORAGE_PREFIX+'vehicles', KEY_STORE=STORAGE_PREFIX+'store';
+  const KEY_PENDING=v=>STORAGE_PREFIX+'pending:'+v, KEY_LOCK=v=>STORAGE_PREFIX+'startLock:'+v, KEY_CARRY=v=>STORAGE_PREFIX+'carry:'+v, KEY_INITIAL=v=>STORAGE_PREFIX+'initial:'+v;
+
+  /* =============== HELPERS =============== */
+  const num=v=>isFinite(parseFloat(v))?parseFloat(v):0;
+  const moneyNum=v=>Number(v||0).toFixed(2);
+  const money=v=>'₹'+moneyNum(v);
+  const round2=x=>Math.round((Number(x)+Number.EPSILON)*100)/100;
+  const normalizePhone=p=>(p||'').replace(/[^\d+]/g,'');
+  const encodeWA=(n,msg)=>`https://wa.me/${normalizePhone(n)}?text=${encodeURIComponent(msg)}`;
+  const normalizeVeh=v=>(v||'').toUpperCase().replace(/\s+/g,' ').trim();
+
+  function istNow(){
+    const d=new Date();
+    const opts={timeZone:'Asia/Kolkata',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false};
+    const str=new Intl.DateTimeFormat('en-GB',opts).format(d);
+    const [datePart,timePart]=str.split(',').map(s=>s.trim());
+    const [dd,mm,yyyy]=datePart.split('/');
+    return {date:`${yyyy}-${mm}-${dd}`, time:timePart};
+  }
+
+  function showToast(msg='Saved'){
+    toast.textContent=msg; toast.style.display='block';
+    setTimeout(()=>toast.style.display='none',1600);
+  }
+
+  /* Enable/Disable form fields & buttons — always enabled now */
+  function setFormEnabled(on){
+    try{
+      const toggles = [meterEnd, partyLocation, litres, pricePerLitre, mileage, btnAdd, btnSend, btnReset];
+      toggles.forEach(el => { if(el && 'disabled' in el){ el.disabled = !on; } });
+      document.querySelectorAll('input[name="sr"]').forEach(r => r.disabled = !on);
+    }catch(e){ console.error('setFormEnabled error', e); }
+  }
+
+  /* =============== RESET ALL STORAGE =============== */
+  function restartAll(){
+    const ok = confirm(
+      'Are you sure you want to RESTART?\n\n' +
+      'This will delete drivers, vehicles, all records, carry-forwards, pending entries and start locks.\n' +
+      'This action cannot be undone.'
+    );
+    if(!ok) return;
+
+    const keysToRemove = [];
+    for(let i=0; i<localStorage.length; i++){
+      const k = localStorage.key(i);
+      if(k && k.startsWith(STORAGE_PREFIX)) keysToRemove.push(k);
+    }
+    keysToRemove.forEach(k => localStorage.removeItem(k));
+
+    driverSel.innerHTML = '';
+    vehicleSel.innerHTML = '';
+    rows.innerHTML = '';
+    storeRows.innerHTML = '';
+    sessionQueue.length = 0;
+
+    meterStart.value = '';
+    meterEnd.value = '';
+    partyLocation.value = '';
+    pricePerLitre.value = '93';
+    litres.value = '';
+    mileage.value = '8';
+    outDistance.textContent = '0';
+    outMileage.textContent = '8.0';
+    outPpl.textContent = '93.00';
+    outConsumption.textContent = '₹0.00';
+    outTotal.textContent = '₹0.00';
+    gpsSnap.value = '';
+    gpsApprove.checked = false;
+
+    fillSelect(driverSel, []);
+    fillSelect(vehicleSel, []);
+    setFormEnabled(true);
+    applyStartLockIfAny();
+
+    showToast('Restart complete — refreshing...');
+    setTimeout(()=>location.reload(), 500);
+  }
+
+  /* =============== MASTERS =============== */
+  function loadList(k){ try{return JSON.parse(localStorage.getItem(k)||'[]')}catch{return []} }
+  function saveList(k,arr){ localStorage.setItem(k, JSON.stringify(arr)); }
+  function fillSelect(sel, arr){
+    sel.innerHTML='';
+    if(arr.length===0){
+      const o=document.createElement('option');o.value='';o.textContent='-- Add first --';sel.appendChild(o);return;
+    }
+    for(const v of arr){const o=document.createElement('option');o.value=v;o.textContent=v;sel.appendChild(o);}
+  }
+
+  // Driver add (robust)
+  addDriverBtn.onclick=()=>{
+    const name=(driverNew.value||'').trim();
+    if(!name){ alert('Type a driver name'); return; }
+    const list=loadList(KEY_DRIVERS);
+    if(list.includes(name)){ alert('Driver already exists'); driverSel.value=name; return; }
+    list.push(name); saveList(KEY_DRIVERS,list);
+    fillSelect(driverSel,list); driverSel.value=name; driverNew.value='';
+    showToast('Driver added');
+  };
+
+  // Vehicle add (initial meter optional)
+  addVehicleBtn.onclick=()=>{
+    const veh = normalizeVeh((vehicleNew.value||'').trim());
+    const init = String(vehicleInit.value||'').trim();
+    if(!veh){ alert('Type a vehicle number'); return; }
+
+    const list = loadList(KEY_VEHICLES);
+    if(list.includes(veh)){ alert('Vehicle already exists'); vehicleSel.value=veh; refreshInitMeterUI(); return; }
+
+    list.push(veh); saveList(KEY_VEHICLES, list);
+
+    // Set initial meter only if provided now
+    if(/^\d+(\.\d+)?$/.test(init)){
+      localStorage.setItem(KEY_LOCK(veh), init);
+      localStorage.setItem(KEY_INITIAL(veh), init);
+    }else{
+      localStorage.removeItem(KEY_LOCK(veh));
+      localStorage.removeItem(KEY_INITIAL(veh));
+    }
+
+    if(localStorage.getItem(KEY_CARRY(veh))===null){ localStorage.setItem(KEY_CARRY(veh),'0'); }
+
+    fillSelect(vehicleSel, list);
+    vehicleSel.value = veh;
+    vehicleNew.value = '';
+    vehicleInit.value = '';
+    applyStartLockIfAny();
+    refreshInitMeterUI();
+    showToast('Vehicle added');
+  };
+
+  function refreshInitMeterUI(){
+    const vno=normalizeVeh(vehicleSel.value);
+    const hasInit=!!localStorage.getItem(KEY_INITIAL(vno));
+    initMeterInput.style.display = hasInit?'none':'inline-block';
+    setInitMeterBtn.style.display = hasInit?'none':'inline-block';
+  }
+
+  setInitMeterBtn.onclick=()=>{
+    const vno=normalizeVeh(vehicleSel.value||''); if(!vno) return alert('Select vehicle');
+    if(localStorage.getItem(KEY_INITIAL(vno))) return alert('Initial already set.');
+    const val=String(initMeterInput.value||'').trim(); if(!/^\d+(\.\d+)?$/.test(val)){alert('Enter valid number');return;}
+    localStorage.setItem(KEY_LOCK(vno), val);
+    localStorage.setItem(KEY_INITIAL(vno), val);
+    if(localStorage.getItem(KEY_CARRY(vno))===null){localStorage.setItem(KEY_CARRY(vno),'0');}
+    applyStartLockIfAny(); refreshInitMeterUI(); showToast('Initial meter saved');
+  };
+
+  /* =============== GATE (now optional) =============== */
+  function gateEnabled(){ return true; }             // Always enabled
+  function tryUnlockForm(){ setFormEnabled(true); }  // Always keep fields on
+
+  gpsSnap.addEventListener('change', tryUnlockForm);
+  gpsApprove.addEventListener('change', tryUnlockForm);
+  setTimeout(tryUnlockForm, 0);
+
+  function applyStartLockIfAny(){
+    const vno = normalizeVeh(vehicleSel.value);
+    const lock = localStorage.getItem(KEY_LOCK(vno));
+    meterStart.value = vno ? (lock || '') : '';
+    lockNote.style.display = vno ? 'block' : 'none';
+  }
+  vehicleSel.addEventListener('change', ()=>{ applyStartLockIfAny(); refreshInitMeterUI(); });
+
+  /* =============== MILEAGE DROPDOWN =============== */
+  function buildMileage(){
+    mileage.innerHTML='';
+    for(let v=8; v<=18; v+=0.5){
+      const val=Number(v.toFixed(1));
+      const o=document.createElement('option'); o.value=String(val); o.textContent=`${val}:1`; mileage.appendChild(o);
+    }
+    mileage.value='8'; outMileage.textContent='8.0';
+  }
+
+  /* =============== COMPUTE & TOTALS =============== */
+  function compute(){
+    const s=num(meterStart.value);
+    const eVal=meterEnd.value.trim(); const e=(eVal===''? s : num(eVal));
+    const distance=Math.max(0, e-s);
+    const mil=num(mileage.value||8);
+    const ppl=num(pricePerLitre.value||93);
+    const consumption=(mil>0)? (distance/mil)*ppl : 0;
+    return {s,e,distance,mil,ppl,consumption:round2(consumption)};
+  }
+  function refreshTotals(){
+    const {distance,mil,ppl,consumption}=compute();
+    outDistance.textContent=distance.toFixed(0);
+    outMileage.textContent=mil.toFixed(1);
+    outPpl.textContent=moneyNum(ppl);
+    outConsumption.textContent=money(consumption);
+    outTotal.textContent=money(consumption).slice(1);
+  }
+  document.addEventListener('input', refreshTotals);
+  document.addEventListener('change', refreshTotals);
+
+  function isFirstEntryForVehicle(vno){
+    const store=getStore(); return !store.some(r=>(r.vehicle||'')===vno);
+  }
+  function validateBasic(){
+    if(!driverSel.value){ alert('Select Driver'); return false; }
+    const vno=normalizeVeh(vehicleSel.value); if(!vno){ alert('Select Vehicle'); return false; }
+    const s=num(meterStart.value); if(!(s>=0)){ alert('Start Meter required'); return false; }
+    const first=isFirstEntryForVehicle(vno); const eVal=meterEnd.value.trim();
+    if(!first){
+      const e=num(eVal); if(!(e>0) || e<=s){ alert('Meter Ending must be > Starting'); return false; }
+    }
+    return true;
+  }
+
+  /* =============== RECORD BUILD =============== */
+  function getStore(){ try{return JSON.parse(localStorage.getItem(KEY_STORE)||'[]')}catch{return[]} }
+  function pushStore(rec){ const s=getStore(); s.push({...rec, savedAt:Date.now()}); localStorage.setItem(KEY_STORE, JSON.stringify(s)); }
+  function recordFromForm(){
+    const {s,e,distance,mil,ppl,consumption}=compute();
+    const vno=normalizeVeh(vehicleSel.value||'');
+    const carryPrev=num(localStorage.getItem(KEY_CARRY(vno)||'0'));
+    return {driver:driverSel.value||'', vehicle:vno, start:s, end:e, distance, mileage:mil, ppl, consumption, location:partyLocation.value.trim(),
+            survey:(document.querySelector('input[name="sr"]:checked')||{}).value==='yes'?'Yes 👍':'No', carryPrev, ts:Date.now()};
+  }
+
+  /* =============== STAMP IMAGE (primary) =============== */
+  async function stampImageWithISTAndData(file, rec){
+    const {date,time}=istNow(); const mark='◆'+Math.random().toString(16).slice(2,8).toUpperCase();
+    const img=await new Promise((res,rej)=>{ const fr=new FileReader(); fr.onload=()=>{const im=new Image(); im.onload=()=>res(im); im.onerror=rej; im.src=fr.result;}; fr.onerror=rej; fr.readAsDataURL(file); });
+    const maxW=1600, scale=Math.min(1,maxW/img.width), W=Math.round(img.width*scale), H=Math.round(img.height*scale), footerH=Math.round(Math.max(160,H*0.22));
+    const canvas=document.createElement('canvas'); canvas.width=W; canvas.height=H+footerH; const ctx=canvas.getContext('2d'); ctx.drawImage(img,0,0,W,H);
+    const pad=Math.max(12,Math.round(W*0.012)); ctx.font=`bold ${Math.max(22,Math.round(W*0.028))}px Inter, Arial`; ctx.textBaseline='bottom';
+    const stampText=`${date} ${time}   ${mark}`; const m=ctx.measureText(stampText); const chipW=m.width+pad*2, chipH=Math.max(32,Math.round(W*0.06));
+    const x=W-chipW-pad, y=H-pad; ctx.save(); ctx.globalAlpha=.55; roundRect(ctx,x,y-chipH,chipW,chipH,10); ctx.fillStyle='#000'; ctx.fill(); ctx.restore();
+    ctx.shadowColor='rgba(0,0,0,0.6)'; ctx.shadowBlur=6; ctx.fillStyle='#fff'; ctx.fillText(stampText,x+pad,y-Math.round(chipH*.25));
+    ctx.shadowBlur=0; ctx.fillStyle='#fff'; ctx.fillRect(0,H,W,footerH);
+    const leftPad=pad, topPad=H+Math.round(footerH*.20), lineGap=Math.max(18,Math.round(W*.018));
+    ctx.fillStyle='#0b4211'; ctx.font=`bold ${Math.max(18,Math.round(W*.020))}px Inter, Arial`; ctx.fillText('A to Z Packers & Movers — Fuel Entry', leftPad, topPad - lineGap);
+    ctx.fillStyle='#0f172a'; ctx.font=`bold ${Math.max(16,Math.round(W*.018))}px Inter, Arial`;
+    const baseLines=[`Driver: ${rec.driver}    Vehicle: ${rec.vehicle}`,`Start: ${rec.start}    End: ${rec.end}    KM: ${rec.distance}`,
+      `Mileage: ${rec.mileage}:1    Price/Litre: ₹${rec.ppl.toFixed(2)}`,`Consumption Amount: ₹${rec.consumption.toFixed(2)}`];
+    baseLines.forEach((t,i)=>ctx.fillText(t,leftPad,topPad+i*lineGap));
+    const blob=await new Promise(res=>canvas.toBlob(res,'image/jpeg',0.9));
+    return new File([blob],`fuel_${date.replace(/-/g,'')}_${time.replace(/:/g,'')}.jpg`,{type:'image/jpeg',lastModified:Date.now()});
+
+    function roundRect(c,x,y,w,h,r){
+      c.beginPath();c.moveTo(x+r,y);c.lineTo(x+w-r,y);c.quadraticCurveTo(x+w,y,x+w,y+r);c.lineTo(x+w,y+h-r);c.quadraticCurveTo(x+w,y+h,x+w-r,y+h);c.lineTo(x+r,y+h);c.quadraticCurveTo(x,y+h,x,y+h-r);c.lineTo(x,y+r);c.quadraticCurveTo(x,y,x+r,y);c.closePath();
+    }
+  }
+
+  /* =============== TEXT BUILDERS =============== */
+  function waPrimary(rec){
+    return [
+      '🚚 *Fuel Report Entry*',
+      `👨‍✈ Driver: ${rec.driver}`,
+      `🚛 Vehicle: ${rec.vehicle}`,
+      `📍 Location: ${rec.location || '-'}`,
+      `🔢 Meter Start: ${rec.start}`,
+      `🔢 Meter End: ${rec.end}`,
+      `📏 Distance: ${rec.distance} km`,
+      `🛞 Mileage Chosen: ${rec.mileage}:1`,
+      `💵 Price/Litre: ₹${rec.ppl.toFixed(2)}`,
+      `🧮 Consumption Amount: ₹${rec.consumption.toFixed(2)} (formula: Distance ÷ Mileage × Price)`,
+      `📝 Survey/Material Report: ${rec.survey}`,
+      `🕒 Photo stamped with date/time & unique symbol`
+    ].join('\n');
+  }
+
+  function formatAmtDriverView(val){
+    const v=round2(val); if(Math.abs(v)<0.005) return '₹0.00';
+    return v>0 ? `-₹${v.toFixed(2)} (Due)` : `+₹${Math.abs(v).toFixed(2)} (Advance)`;
+  }
+
+  // Shows new math lines in WhatsApp
+  function waFinalMinimal(rec, diffTrip, carryNew, note){
+    const base = waPrimary(rec).split('\n');
+    if(base[base.length-1].includes('Photo stamped')) base.pop();
+
+    const carryPrev = num(localStorage.getItem(KEY_CARRY(rec.vehicle))||'0');
+    const bossAmt   = num(bossAmount.value||0);
+
+    const extra = [
+      `💰 Boss Amount: ₹${bossAmt.toFixed(2)}`,
+      `🧮 Difference Amount (Consumption − Boss): ${formatAmtDriverView(diffTrip)}`,
+      `↩️ Previous Carry: ${formatAmtDriverView(carryPrev)}`,
+      `➡️ New Carry Forward (Prev − Difference): ${formatAmtDriverView(carryNew)}`,
+      note ? `📝 Note: ${note}` : ''
+    ].filter(Boolean);
+
+    return [...base, ...extra].join('\n');
+  }
+
+  /* =============== SENDERS =============== */
+  async function sendPrimaryWithImage(rec){
+    const raw=(gpsSnap.files&&gpsSnap.files[0])?gpsSnap.files[0]:null;
+    if(raw){
+      const stamped=await stampImageWithISTAndData(raw, rec);
+      if(navigator.share && navigator.canShare && navigator.canShare({files:[stamped]})){
+        try{ await navigator.share({files:[stamped],text:waPrimary(rec),title:'Fuel Entry'}); return true; }catch(e){}
+      }
+      window.open(encodeWA(boss1.value || '+919338888550', waPrimary(rec)),'_blank');
+      const url=URL.createObjectURL(stamped); window.open(url,'_blank');
+      alert('WhatsApp opened. Attach the stamped image from the new tab.');
+      return false;
+    }else{
+      window.open(encodeWA(boss1.value || '+919338888550', waPrimary(rec)),'_blank');
+      return true;
+    }
+  }
+
+  function sendFinalTextOnly_Minimal(rec, diffTrip, carryNew, note){
+    const text=waFinalMinimal(rec, diffTrip, carryNew, note);
+    const phone=boss1.value || '+919338888550'; window.open(encodeWA(phone,text),'_blank');
+  }
+
+  /* =============== SESSION & STORE RENDER =============== */
+  const sessionQueue=[];
+  function renderSession(){
+    rows.innerHTML='';
+    sessionQueue.forEach((r,i)=>{
+      const tr=document.createElement('tr');
+      tr.innerHTML=`<td>${i+1}</td><td>${r.driver}</td><td>${r.vehicle}</td><td>${r.start}</td><td>${r.end}</td>
+        <td>${r.distance}</td><td>${r.mileage.toFixed(1)}</td><td>${money(r.consumption)}</td>
+        <td class="row-actions"><button type="button" class="btn-red tiny" data-i="${i}">Remove</button></td>`;
+      rows.appendChild(tr);
+    });
+    rows.querySelectorAll('button.btn-red').forEach(b=>{
+      b.onclick=e=>{ const idx=Number(e.currentTarget.getAttribute('data-i')); sessionQueue.splice(idx,1); renderSession(); };
+    });
+  }
+
+  function renderStore(){
+    const data=getStore(); storeRows.innerHTML='';
+    data.slice().reverse().forEach(r=>{
+      const d=new Date(r.savedAt||r.ts||Date.now());
+      const tr=document.createElement('tr');
+      tr.innerHTML=`<td>${d.toLocaleDateString()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}</td>
+      <td>${r.driver}</td><td>${r.vehicle}</td><td>${r.start}</td><td>${r.end}</td><td>${r.distance}</td><td>${Number(r.mileage).toFixed(1)}</td><td>${money(r.consumption)}</td>`;
+      storeRows.appendChild(tr);
+    });
+  }
+
+  /* =============== FLOW BUTTONS =============== */
+  btnAdd.onclick=e=>{ e.preventDefault(); if(!validateBasic())return; sessionQueue.push(recordFromForm()); renderSession(); showToast('Added to session'); };
+
+  btnSend.onclick=async e=>{
+    e.preventDefault(); if(!validateBasic()) return; const rec=recordFromForm();
+    await sendPrimaryWithImage(rec); localStorage.setItem(KEY_PENDING(rec.vehicle), JSON.stringify(rec)); pushStore(rec); openModal();
+  };
+
+  function openModal(){ modal.style.display='flex'; if(!bossAmount.value) bossAmount.value='3000'; bossNote.value=''; }
+  function closeModal(){ modal.style.display='none'; }
+  modalClose.onclick=closeModal; btnModalClose2.onclick=closeModal;
+
+  // FINAL SEND — New rule: Difference = Consumption − Boss; New Carry = Previous − Difference
+  btnFinalSend.onclick=()=>{
+    const vno=normalizeVeh(vehicleSel.value);
+    const raw=localStorage.getItem(KEY_PENDING(vno)); const rec=raw?JSON.parse(raw):recordFromForm();
+
+    const bossAmt = num(bossAmount.value||0); if(!(bossAmt>=0)){alert('Please enter Boss Amount');return;}
+    const note=bossNote.value.trim();
+
+    const carryPrev=num(localStorage.getItem(KEY_CARRY(vno))||'0');
+    const consumption=round2(rec.consumption);
+
+    const diffTrip = round2(consumption - bossAmt);   // Difference
+    const carryNew = round2(carryPrev - diffTrip);    // New Carry (Prev − Difference)
+
+    sendFinalTextOnly_Minimal(rec, diffTrip, carryNew, note);
+
+    localStorage.setItem(KEY_CARRY(vno), String(carryNew));
+    localStorage.setItem(KEY_LOCK(vno), String(rec.end));
+    localStorage.removeItem(KEY_PENDING(vno));
+
+    meterEnd.value=''; partyLocation.value=''; refreshTotals(); closeModal(); renderStore(); applyStartLockIfAny();
+    showToast('Final sent. Carry Forward = Previous − Difference');
+  };
+
+  /* =============== EXPORT/SHARE ALL =============== */
+  document.getElementById('btnSessionWA').onclick=()=>{
+    if(sessionQueue.length===0){alert('No session records');return;}
+    const lines=['🗒️ *Session Fuel Entries*'];
+    sessionQueue.forEach((r,i)=>lines.push(`${i+1}) ${r.driver} • ${r.vehicle} • KM ${r.distance} • Mileage ${r.mileage.toFixed(1)} • ${money(r.consumption)}`));
+    window.open(encodeWA(boss1.value || '+919338888550', lines.join('\n')),'_blank');
+  };
+
+  document.getElementById('btnMonthPDF').onclick=()=>{
+    const { jsPDF }=window.jspdf||{}; if(!jsPDF){alert('PDF library failed to load.');return;}
+    const m=new Date(); const ym=`${m.getFullYear()}-${String(m.getMonth()+1).padStart(2,'0')}`;
+    const data=sessionQueue.filter(r=>{ const d=new Date(r.ts||Date.now()); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`===ym; });
+    exportPDF(`Fuel_Session_${ym}.pdf`, data, `Session Records (${ym})`);
+  };
+
+  btnStoreWA.onclick=()=>{
+    const data=getStore(); if(data.length===0){alert('No stored records');return;}
+    const lines=['📚 *All Fuel Records (Summary)*']; let sum=0;
+    data.forEach((r,i)=>{ sum+=Number(r.consumption||0); const d=new Date(r.savedAt||r.ts||Date.now());
+      lines.push(`${i+1}) ${d.toLocaleDateString()} • ${r.driver} • ${r.vehicle} • KM ${r.distance} • Mileage ${Number(r.mileage).toFixed(1)} • ${money(r.consumption)}`);
+    });
+    lines.push('',`🧮 Total Consumption: ${money(sum)}`);
+    window.open(encodeWA(boss1.value || '+919338888550', lines.join('\n')),'_blank');
+    if((boss2.value||'').trim()){
+      setTimeout(()=>window.open(encodeWA(boss2.value, lines.join('\n')),'_blank'), 400);
+    }
+  };
+
+  btnStorePDF.onclick=()=>{
+    const data=getStore(); if(data.length===0){alert('No stored records yet');return;}
+    exportPDF('Fuel_All_Records.pdf', data, 'All Records (Summary)');
+  };
+
+  async function exportPDF(filename, data, title){
+    const { jsPDF }=window.jspdf||{}; if(!jsPDF){alert('PDF library failed to load.');return;}
+    const doc=new jsPDF({unit:'pt',format:'a4'}); const margin=36; let y=margin;
+    doc.setFont('helvetica','bold'); doc.setFontSize(16); doc.text(title,margin,y); y+=18;
+    doc.setFont('helvetica',''); doc.setFontSize(10); doc.text(`Generated: ${new Date().toLocaleString()}`,margin,y); y+=14;
+    const headers=['Date','Driver','Vehicle','Start','End','KM','Mileage','Consumption (₹)']; y+=8; drawRow(headers,true);
+    let total=0; data.forEach(r=>{
+      const d=new Date(r.savedAt||r.ts||Date.now());
+      const row=[d.toLocaleDateString(),r.driver,r.vehicle,String(r.start),String(r.end),String(r.distance),Number(r.mileage).toFixed(1),money(r.consumption)];
+      total+=Number(r.consumption||0); drawRow(row,false);
+    });
+    y+=10; doc.setFont('helvetica','bold'); doc.text(`Total Consumption: ${money(total)}`,margin,y); doc.save(filename);
+
+    function drawRow(cols,isHeader){
+      const colW=[70,75,95,50,50,40,55,90]; let x=margin, cellY=y+12;
+      doc.setFont('helvetica',isHeader?'bold':''); doc.setFontSize(isHeader?11:10);
+      cols.forEach((t,i)=>{ doc.text(String(t),x,cellY,{maxWidth:colW[i]}); x+=colW[i]+6; });
+      y+=isHeader?14:12; if(y>760){doc.addPage(); y=margin;}
+    }
+  }
+
+  /* =============== INIT =============== */
+  function init(){
+    buildMileage(); refreshTotals();
+    fillSelect(driverSel, loadList(KEY_DRIVERS)); fillSelect(vehicleSel, loadList(KEY_VEHICLES));
+    renderStore(); setFormEnabled(true); applyStartLockIfAny(); refreshInitMeterUI();
+  }
+  init();
+
+  btnRestartAll.addEventListener('click', restartAll);
+})();
+</script>
+</body>
+</html>
