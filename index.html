@@ -165,8 +165,6 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
                 <div class="flex items-center">
                     <h1 class="text-2xl font-bold text-gray-900">🚚 A to Z Packers & Movers</h1>
                 </div>
-                <!-- Mobile Menu Button -->
-
 
                 <!-- Desktop Navigation -->
                 <nav class="hidden lg:flex items-center space-x-8">
@@ -191,7 +189,9 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
                     <a href="#videos" class="nav-link text-gray-700 hover:text-blue-600 font-medium transition-colors">
                         🎥 Videos
                     </a>
-                    
+                    <button id="adminPanelBtn" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors font-medium">
+                        🔐 My Admin Panel
+                    </button>
                 </nav>
 
                 <!-- Mobile Menu Button -->
@@ -230,12 +230,10 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
                         🎥 Videos
                     </a>
                     <div class="px-2 pt-2">
-  <button id="mobileAdminBtn"
-    onclick="document.getElementById('adminModal').classList.remove('hidden')"
-    class="w-full bg-red-600 text-white px-4 py-3 rounded-lg hover:bg-red-700 transition-colors font-medium mt-2">
-    🔐 My Admin Panel
-  </button>
-</div>
+                        <button id="mobileAdminBtn" class="w-full bg-red-600 text-white px-4 py-3 rounded-lg hover:bg-red-700 transition-colors font-medium">
+                            🔐 My Admin Panel
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1446,7 +1444,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
                 <!-- Features -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12 text-center">
                     <div class="bg-white bg-opacity-10 rounded-lg p-6">
-                        <div class="text-3xl mb-3">??</div>
+                        <div class="text-3xl mb-3">📱</div>
                         <h3 class="font-semibold mb-2">Real-time Updates</h3>
                         <p class="text-sm opacity-90">Get instant notifications on your shipment status</p>
                     </div>
@@ -2510,14 +2508,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
             async function loginUser(email, password) {
                 try {
                     const userCredential = await signInWithEmailAndPassword(auth, email, password);
-                    
-    // Immediate UI update (safety if onAuthStateChanged is delayed)
-    const __loginErr = document.getElementById('loginError');
-    if (__loginErr) { __loginErr.classList.add('hidden'); __loginErr.textContent=''; }
-    const __admLogin = document.getElementById('adminLogin');
-    const __admContent = document.getElementById('adminContent');
-    if (__admLogin && __admContent) { __admLogin.classList.add('hidden'); __admContent.classList.remove('hidden'); }
-console.log('✅ Login successful:', userCredential.user.email);
+                    console.log('✅ Login successful:', userCredential.user.email);
                 } catch (error) {
                     console.error('❌ Login failed:', error);
                     let errorMessage = 'Login failed. ';
@@ -2671,23 +2662,14 @@ ${consignment.driverName ? `🚛 *Driver:* ${consignment.driverName}` : ''}
 ${consignment.vehicleNumber ? `🚗 *Vehicle:* ${consignment.vehicleNumber}` : ''}
 ${consignment.driverPhone ? `📞 *Driver Phone:* ${consignment.driverPhone}` : ''}
 
-// Build tracker URL and redirect
-// Build tracker URL and redirect
-const trackingId = (typeof consignment !== 'undefined' && consignment.trackingId) ? consignment.trackingId : '';
-if (trackingId) {
-  const url = `https://atozpackerandmovers.github.io/A-to-Z-Packers-and-Movers-Tracking/?id=${encodeURIComponent(trackingId)}`;
-  window.location.href = url;
-} else {
-  console.warn('No trackingId found; redirect skipped.');
-}
+Track your shipment anytime: https://atozpackerandmovers.github.io/A-to-Z-Packers-and-Movers-Tracking/
 
-// Support Information
-const supportInfo = `
-For support: 📞 +91 93388 88550
-✉️ info@atozpackersmovers.in
-Thank you for choosing A to Z Packers & Movers
-`;
-console.log(supportInfo);
+Use this Tracking ID: ${trackingId}
+
+For support: +91 93388 88550
+📧 support@atozpackersmovers.in
+
+Thank you for choosing A to Z Packers & Movers! 🙏`;
                     
                     // Encode message for URL
                     const encodedMessage = encodeURIComponent(message);
@@ -3075,23 +3057,6 @@ console.log(supportInfo);
             console.log('✅ Integrated system initialized successfully!');
         }
     </script>
-<script>
-  (function () {
-    const btn = document.getElementById('menuBtn');
-    const menu = document.getElementById('mobileMenu');
-    if (!btn || !menu) return;
-
-    // Tailwind hidden class ବ୍ୟବହାର ହେଉଛି ଧରି
-    btn.addEventListener('click', function (e) {
-      e.preventDefault();
-      menu.classList.toggle('hidden');     // ଲୁଚା/ଦେଖା
-      menu.classList.toggle('active');     // ଯଦି CSS ରେ .active ବ୍ୟବହାର କରୁଛନ୍ତି
-      // ଚାହିଁଲେ ଆଇକନ୍ ସ୍ୱାପ୍:
-      const svg = btn.querySelector('svg');
-      if (svg) svg.classList.toggle('text-gray-900');
-    });
-  })();
-</script>
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'977ae3be920ba75f',t:'MTc1NjYyNjEzMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 <!-- Floating Contact Buttons -->
 <div class="az-fab-wrap" role="navigation" aria-label="Quick Actions">
@@ -3132,34 +3097,5 @@ console.log(supportInfo);
 .az-fab-whatsapp { background-color: #25D366; }
 .az-fab-call { background-color: #007bff; }
 </style>
-<script>
-  const mobileMenuBtn = document.getElementById("mobileMenuBtn");
-  const mobileMenu = document.getElementById("mobileMenu");
-  const menuIcon = document.getElementById("menuIcon");
-  const closeIcon = document.getElementById("closeIcon");
-
-  mobileMenuBtn.addEventListener("click", () => {
-    mobileMenu.classList.toggle("active");
-    menuIcon.classList.toggle("hidden");
-    closeIcon.classList.toggle("hidden");
-  });
-</script>
 </body>
 </html>
-<!-- Robust initialization to ensure Firebase is ready before attaching handlers -->
-<script>
-  (function(){
-    function tryInit(){
-      if (window.firebaseDb && window.firebaseAuth && window.firebaseModules && typeof initializeIntegratedSystem==='function') {
-        try { initializeIntegratedSystem(); } catch(e){ console.error('init error:', e); }
-        return true;
-      }
-      return false;
-    }
-    if(!tryInit()){
-      window.addEventListener('load', () => {
-        const t = setInterval(() => { if(tryInit()){ clearInterval(t);} }, 100);
-      });
-    }
-  })();
-</script>
